@@ -1,3 +1,10 @@
+## [1.0.4](https://github.com/JussiLem/lunchbot/compare/v1.0.3...v1.0.4) (2024-08-15)
+
+
+### Bug Fixes
+
+* **release:** adjusting to the correct path ([8d23b76](https://github.com/JussiLem/lunchbot/commit/8d23b76afcfc2383bd06e021d9048a9e01d54f5a))
+
 ## [1.0.3](https://github.com/JussiLem/lunchbot/compare/v1.0.2...v1.0.3) (2024-08-15)
 
 
