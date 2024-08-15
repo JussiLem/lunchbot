@@ -164,6 +164,7 @@ workflow?.addJobs({
       },
       {
         name: 'Upload Build Artifacts',
+        if: "startsWith(github.ref, 'refs/tags/')",
         uses: 'actions/upload-artifact@v4',
         with: {
           name: 'build-artifacts',
@@ -243,6 +244,10 @@ workflow?.addJobs({
         },
       },
       {
+        name: 'Ensure cdk.out Directory is Clean',
+        run: 'rm -rf cdk.out && mkdir -p cdk.out',
+      },
+      {
         name: 'Download Build Artifacts',
         uses: 'actions/download-artifact@v4',
         with: {
@@ -269,8 +274,9 @@ workflow?.addJobs({
         },
         name: 'Deploy',
         run: `\
+          ls -R cdk.out
           echo "Deploying..."
-          npx cdk deploy lunchbot-dev --app 'cdk.out/cdk.out'
+          npx cdk deploy lunchbot-dev'
         `,
       },
     ],
