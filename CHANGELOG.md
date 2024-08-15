@@ -1,3 +1,10 @@
+## [1.0.8](https://github.com/JussiLem/lunchbot/compare/v1.0.7...v1.0.8) (2024-08-15)
+
+
+### Bug Fixes
+
+* **release:** added aws role assuming ([ed9014e](https://github.com/JussiLem/lunchbot/commit/ed9014e0b8952bea0632b760687cb465b1a26511))
+
 ## [1.0.7](https://github.com/JussiLem/lunchbot/compare/v1.0.6...v1.0.7) (2024-08-15)
 
 
