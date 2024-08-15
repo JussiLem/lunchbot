@@ -239,11 +239,13 @@ workflow?.addJobs({
           'github-token': '${{ secrets.PROJEN_GITHUB_TOKEN }}',
           path: 'cdk.out',
         },
-        run: 'ls -R',
       },
       {
         name: 'Install dependencies',
-        run: 'npm install',
+        run: `\
+          ls -R
+          npm install
+        `,
       },
       {
         env: {
@@ -252,7 +254,6 @@ workflow?.addJobs({
         },
         name: 'Deploy',
         run: `\
-          # Add your deployment commands here
           echo "Deploying..."
           npx projen deploy lunchbot-dev
         `,
