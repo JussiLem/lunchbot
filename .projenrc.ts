@@ -149,7 +149,7 @@ workflow?.addJobs({
       },
       {
         name: 'Semantic Release',
-        if: 'github.ref == "refs/heads/main"',
+        if: "github.ref == 'refs/heads/main'",
         env: {
           GITHUB_TOKEN: '${{ secrets.GITHUB_TOKEN }}',
           NPM_TOKEN: '${{ secrets.NPM_TOKEN }}',
