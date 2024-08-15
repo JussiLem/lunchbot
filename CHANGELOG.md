@@ -1,3 +1,10 @@
+## [1.0.7](https://github.com/JussiLem/lunchbot/compare/v1.0.6...v1.0.7) (2024-08-15)
+
+
+### Bug Fixes
+
+* **release:** fixed deploy command ([75d358c](https://github.com/JussiLem/lunchbot/commit/75d358cc9f83c88d215d2a3b62f55356d1466c85))
+
 ## [1.0.6](https://github.com/JussiLem/lunchbot/compare/v1.0.5...v1.0.6) (2024-08-15)
 
 
