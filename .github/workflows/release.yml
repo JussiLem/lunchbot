@@ -104,6 +104,7 @@ jobs:
     permissions:
       contents: write
     environment: dev
+    if: startsWith(github.ref, 'refs/tags/')
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -117,6 +118,8 @@ jobs:
           name: build-artifacts
           github-token: ${{ secrets.PROJEN_GITHUB_TOKEN }}
           path: cdk.out
+      - name: Set Permissions for cdk.out
+        run: chmod -R 755 cdk.out
       - name: Install dependencies
         run: "          ls -R
 

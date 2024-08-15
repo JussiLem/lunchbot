@@ -224,6 +224,7 @@ workflow?.addJobs({
   },
   deploy: {
     needs: ['build'],
+    if: "startsWith(github.ref, 'refs/tags/')",
     runsOn: ['ubuntu-latest'],
     environment: 'dev',
     permissions: {
@@ -249,6 +250,10 @@ workflow?.addJobs({
           'github-token': '${{ secrets.PROJEN_GITHUB_TOKEN }}',
           path: 'cdk.out',
         },
+      },
+      {
+        name: 'Set Permissions for cdk.out',
+        run: 'chmod -R 755 cdk.out',
       },
       {
         name: 'Install dependencies',
