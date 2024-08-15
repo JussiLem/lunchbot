@@ -3,7 +3,6 @@ import { awscdk, javascript } from 'projen'
 const project = new awscdk.AwsCdkTypeScriptApp({
   authorName: 'Jussi Lemmetyinen',
   cdkVersion: '2.1.0',
-  codeCov: true,
   defaultReleaseBranch: 'main',
   description: 'Serverless lunch bot',
   name: 'lunchbot',
@@ -52,6 +51,7 @@ project?.eslint?.addExtends('plugin:functional/recommended')
 
 project?.eslint?.addRules({
   'functional/no-expression-statements': 'off',
+  'functional/no-return-void': 'off',
   'functional/no-classes': 'off',
   'functional/prefer-immutable-types': [
     'off',

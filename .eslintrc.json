@@ -127,6 +127,7 @@
       }
     ],
     "functional/no-expression-statements": "off",
+    "functional/no-return-void": "off",
     "functional/no-classes": "off",
     "functional/prefer-immutable-types": [
       "off",
