@@ -1,3 +1,10 @@
+## [1.0.6](https://github.com/JussiLem/lunchbot/compare/v1.0.5...v1.0.6) (2024-08-15)
+
+
+### Bug Fixes
+
+* **release:** adjusting artifact handling ([aef4cfa](https://github.com/JussiLem/lunchbot/commit/aef4cfaf26bc2d6f72156b83291929994d781b39))
+
 ## [1.0.5](https://github.com/JussiLem/lunchbot/compare/v1.0.4...v1.0.5) (2024-08-15)
 
 
