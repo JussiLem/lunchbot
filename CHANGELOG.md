@@ -1,3 +1,10 @@
+## [1.0.9](https://github.com/JussiLem/lunchbot/compare/v1.0.8...v1.0.9) (2024-08-15)
+
+
+### Bug Fixes
+
+* **release:** added id token permission for deploy step ([61ec668](https://github.com/JussiLem/lunchbot/commit/61ec668d61df7b0a0fe32361f2e3be9bbdcce5f6))
+
 ## [1.0.8](https://github.com/JussiLem/lunchbot/compare/v1.0.7...v1.0.8) (2024-08-15)
 
 
