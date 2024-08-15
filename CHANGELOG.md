@@ -1,3 +1,10 @@
+## [1.0.5](https://github.com/JussiLem/lunchbot/compare/v1.0.4...v1.0.5) (2024-08-15)
+
+
+### Bug Fixes
+
+* **release:** adjusted permission and run deploy only with tags ([f11ba93](https://github.com/JussiLem/lunchbot/commit/f11ba93683886967323fc3852dc91cd9ca02065e))
+
 ## [1.0.4](https://github.com/JussiLem/lunchbot/compare/v1.0.3...v1.0.4) (2024-08-15)
 
 
