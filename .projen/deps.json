@@ -1,6 +1,22 @@
 {
   "dependencies": [
     {
+      "name": "@semantic-release/changelog",
+      "type": "build"
+    },
+    {
+      "name": "@semantic-release/git",
+      "type": "build"
+    },
+    {
+      "name": "@semantic-release/github",
+      "type": "build"
+    },
+    {
+      "name": "@semantic-release/npm",
+      "type": "build"
+    },
+    {
       "name": "@types/aws-lambda",
       "type": "build"
     },
@@ -81,6 +97,10 @@
     },
     {
       "name": "projen",
+      "type": "build"
+    },
+    {
+      "name": "semantic-release",
       "type": "build"
     },
     {
