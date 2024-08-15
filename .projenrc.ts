@@ -99,7 +99,7 @@ workflow?.on({
 
 workflow?.addJobs({
   build: {
-    runsOn: ['ubuntu-latest'],
+    runsOn: ['node:20'],
     permissions: {
       contents: JobPermission.WRITE,
     },
