@@ -1,3 +1,11 @@
+## [1.0.3](https://github.com/JussiLem/lunchbot/compare/v1.0.2...v1.0.3) (2024-08-15)
+
+
+### Bug Fixes
+
+* **release:** adjusted artifact handling ([24e6a17](https://github.com/JussiLem/lunchbot/commit/24e6a1756398907db8af8745caf707a62c455fed))
+* **release:** fixed correct name for upload artifacts ([fc6b851](https://github.com/JussiLem/lunchbot/commit/fc6b851abb85c75f6e0cf33dde948ab436ec5b8f))
+
 ## [1.0.2](https://github.com/JussiLem/lunchbot/compare/v1.0.1...v1.0.2) (2024-08-15)
 
 
