@@ -1,3 +1,11 @@
+## [1.0.2](https://github.com/JussiLem/lunchbot/compare/v1.0.1...v1.0.2) (2024-08-15)
+
+
+### Bug Fixes
+
+* **release:** adjusted artifact downloading ([36c4ad6](https://github.com/JussiLem/lunchbot/commit/36c4ad6925fbc8b9f2abd523372ca8fd9ee37d45))
+* **release:** download previously created artifacts ([7f86e8c](https://github.com/JussiLem/lunchbot/commit/7f86e8cdb5183b89f9ff0e6100db588825c35a45))
+
 ## [1.0.1](https://github.com/JussiLem/lunchbot/compare/v1.0.0...v1.0.1) (2024-08-15)
 
 
