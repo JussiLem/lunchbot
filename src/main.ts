@@ -33,7 +33,7 @@ export class LunchBotStack extends Stack {
     })
 
     const lexAssets = new assets.Asset(this, 'lexAssets', {
-      path: path.join('../bot-files/Manifest.json'),
+      path: path.join('bot-files/Manifest.json'),
     })
 
     const lunchBot = new lex.CfnBot(this, 'LunchBot', {
@@ -90,7 +90,7 @@ export class LunchBotStack extends Stack {
         BOT_ALIAS_ID: botAlias.attrBotAliasId,
         POWERTOOLS_LOG_LEVEL: 'DEBUG',
       },
-      entry: path.join('listen-slack-events/listen-slack-events.api.ts'),
+      entry: path.join('src/listen-slack-events/listen-slack-events.api.ts'),
     })
     // Attach Lex permissions to the Lambda role
     eventLambda.addToRolePolicy(
