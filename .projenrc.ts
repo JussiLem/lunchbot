@@ -99,7 +99,7 @@ workflow?.on({
 
 workflow?.addJobs({
   build: {
-    runsOn: ['node:20'],
+    runsOn: ['ubuntu-latest'],
     permissions: {
       contents: JobPermission.WRITE,
     },
@@ -110,6 +110,13 @@ workflow?.addJobs({
       {
         name: 'Checkout',
         uses: 'actions/checkout@v4',
+      },
+      {
+        name: 'Set up Node.js',
+        uses: 'actions/setup-node@v4',
+        with: {
+          'node-version': '20.16.0',
+        },
       },
       {
         name: 'Install dependencies',
