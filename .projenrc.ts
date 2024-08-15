@@ -226,12 +226,24 @@ workflow?.addJobs({
         uses: 'actions/checkout@v4',
       },
       {
-        name: 'Install dependencies',
-        run: 'npm install',
+        name: 'Set up Node.js',
+        uses: 'actions/setup-node@v4',
+        with: {
+          'node-version': '20.16.0',
+        },
       },
       {
-        name: 'Build',
-        run: 'npm run build',
+        name: 'Download Build Artifacts',
+        uses: 'actions/download-artifact@v4',
+        with: {
+          'github-token': '${{ secrets.PROJEN_GITHUB_TOKEN }}',
+          path: 'cdk.out',
+        },
+        run: 'ls -R',
+      },
+      {
+        name: 'Install dependencies',
+        run: 'npm install',
       },
       {
         env: {
