@@ -47,7 +47,7 @@ exports[`Snapshot 1`] = `
         "AutoBuildBotLocales": true,
         "BotFileS3Location": {
           "S3Bucket": {
-            "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
+            "Fn::Sub": "[ASSET BUCKET]-\${AWS::AccountId}-\${AWS::Region}",
           },
           "S3ObjectKey": "6fbb7fa52f758304758a215b8e543727f3ce53f76d5369b196dff8f290c319e5.json",
         },
@@ -99,9 +99,9 @@ exports[`Snapshot 1`] = `
       "Properties": {
         "Code": {
           "S3Bucket": {
-            "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
+            "Fn::Sub": "[ASSET BUCKET]-\${AWS::AccountId}-\${AWS::Region}",
           },
-          "S3Key": "643640686b9566ee92d2298c2bfc960853337b2641217c40ad946f54de89c185.zip",
+          "S3Key": "[ASSET ZIP]",
         },
         "Environment": {
           "Variables": {
