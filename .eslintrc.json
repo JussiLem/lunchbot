@@ -17,6 +17,7 @@
   },
   "extends": [
     "plugin:import/typescript",
+    "plugin:functional/recommended",
     "plugin:prettier/recommended"
   ],
   "settings": {
@@ -123,6 +124,14 @@
           "constructor",
           "method"
         ]
+      }
+    ],
+    "functional/no-expression-statements": "off",
+    "functional/no-classes": "off",
+    "functional/prefer-immutable-types": [
+      "off",
+      {
+        "enforcement": "ReadonlyDeep"
       }
     ]
   },

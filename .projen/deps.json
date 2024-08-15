@@ -1,6 +1,10 @@
 {
   "dependencies": [
     {
+      "name": "@types/aws-lambda",
+      "type": "build"
+    },
+    {
       "name": "@types/jest",
       "type": "build"
     },
@@ -34,6 +38,11 @@
     },
     {
       "name": "eslint-import-resolver-typescript",
+      "type": "build"
+    },
+    {
+      "name": "eslint-plugin-functional",
+      "version": "6.6.3",
       "type": "build"
     },
     {
@@ -77,6 +86,26 @@
     {
       "name": "typescript",
       "type": "build"
+    },
+    {
+      "name": "@aws-lambda-powertools/logger",
+      "type": "runtime"
+    },
+    {
+      "name": "@aws-lambda-powertools/metrics",
+      "type": "runtime"
+    },
+    {
+      "name": "@aws-lambda-powertools/tracer",
+      "type": "runtime"
+    },
+    {
+      "name": "@aws-sdk/client-lex-runtime-v2",
+      "type": "runtime"
+    },
+    {
+      "name": "@middy/core",
+      "type": "runtime"
     },
     {
       "name": "aws-cdk-lib",
