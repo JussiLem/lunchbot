@@ -247,7 +247,7 @@ workflow?.addJobs({
         with: {
           name: 'build-artifacts',
           'github-token': '${{ secrets.PROJEN_GITHUB_TOKEN }}',
-          path: '.',
+          path: 'cdk.out',
         },
       },
       {
@@ -265,7 +265,7 @@ workflow?.addJobs({
         name: 'Deploy',
         run: `\
           echo "Deploying..."
-          npx projen deploy lunchbot-dev
+          npx cdk deploy lunchbot-dev --app 'cdk.out/cdk.out'
         `,
       },
     ],
