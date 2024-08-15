@@ -162,6 +162,15 @@ workflow?.addJobs({
         },
         run: 'npx semantic-release',
       },
+      {
+        name: 'Upload Build Artifacts',
+        uses: 'actions/upload-artifacts@v4',
+        with: {
+          name: 'build-artifacts',
+          path: 'cdk.out/**',
+          'retention-days': 5,
+        },
+      },
     ],
   },
   self_mutation: {
@@ -236,8 +245,9 @@ workflow?.addJobs({
         name: 'Download Build Artifacts',
         uses: 'actions/download-artifact@v4',
         with: {
+          name: 'build-artifacts',
           'github-token': '${{ secrets.PROJEN_GITHUB_TOKEN }}',
-          path: 'cdk.out',
+          path: '.',
         },
       },
       {
