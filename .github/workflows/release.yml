@@ -106,6 +106,9 @@ jobs:
       - name: Build
         run: npm run build
       - name: Deploy
+        env:
+          CDK_DEFAULT_ACCOUNT: ${{ secrets.CDK_DEFAULT_ACCOUNT }}
+          CDK_DEFAULT_REGION: ${{ secrets.CDK_DEFAULT_REGION }}
         run: "          # Add your deployment commands here
 
           \          echo \"Deploying...\"

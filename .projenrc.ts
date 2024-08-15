@@ -234,6 +234,10 @@ workflow?.addJobs({
         run: 'npm run build',
       },
       {
+        env: {
+          CDK_DEFAULT_ACCOUNT: '${{ secrets.CDK_DEFAULT_ACCOUNT }}',
+          CDK_DEFAULT_REGION: '${{ secrets.CDK_DEFAULT_REGION }}',
+        },
         name: 'Deploy',
         run: `\
           # Add your deployment commands here
