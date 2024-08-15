@@ -268,6 +268,14 @@ workflow?.addJobs({
         `,
       },
       {
+        name: 'Assume AWS Role',
+        uses: 'aws-actions/configure-aws-credentials@v3',
+        with: {
+          'role-to-assume': '${{ secrets.AWS_ROLE_TO_ASSUME }}',
+          'aws-region': '${{ secrets.CDK_DEFAULT_REGION }}',
+        },
+      },
+      {
         env: {
           CDK_DEFAULT_ACCOUNT: '${{ secrets.CDK_DEFAULT_ACCOUNT }}',
           CDK_DEFAULT_REGION: '${{ secrets.CDK_DEFAULT_REGION }}',
