@@ -230,6 +230,7 @@ workflow?.addJobs({
     environment: 'dev',
     permissions: {
       contents: JobPermission.WRITE,
+      idToken: JobPermission.WRITE,
     },
     steps: [
       {
