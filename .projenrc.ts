@@ -164,7 +164,7 @@ workflow?.addJobs({
       },
       {
         name: 'Upload Build Artifacts',
-        uses: 'actions/upload-artifacts@v4',
+        uses: 'actions/upload-artifact@v4',
         with: {
           name: 'build-artifacts',
           path: 'cdk.out/**',
