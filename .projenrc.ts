@@ -1,5 +1,4 @@
 import { awscdk, javascript } from 'projen'
-import { TrailingComma } from 'projen/lib/javascript'
 
 const project = new awscdk.AwsCdkTypeScriptApp({
   authorName: 'Jussi Lemmetyinen',
@@ -14,7 +13,7 @@ const project = new awscdk.AwsCdkTypeScriptApp({
   prettierOptions: {
     settings: {
       singleQuote: true,
-      trailingComma: TrailingComma.ALL,
+      trailingComma: javascript.TrailingComma.ALL,
       semi: false,
     },
   },
@@ -26,8 +25,27 @@ const project = new awscdk.AwsCdkTypeScriptApp({
     '@middy/core',
     '@aws-sdk/client-lex-runtime-v2',
   ],
-  devDeps: ['eslint-plugin-functional@6.6.3', '@types/aws-lambda'],
+  devDeps: [
+    'eslint-plugin-functional@6.6.3',
+    '@types/aws-lambda',
+    'commitizen',
+    'cz-conventional-changelog',
+  ],
   // packageName: undefined,  /* The "name" in package.json. */
+})
+
+project.package.addField('config', {
+  commitizen: {
+    path: './node_modules/cz-conventional-changelog',
+  },
+})
+project.tasks.addTask('commitizen:init', {
+  description: 'Initialize Commitizen with conventional changelog adapter',
+  exec: 'npx commitizen init cz-conventional-changelog --save-dev --save-exact --force',
+})
+project.tasks.addTask('commit', {
+  description: 'Run Commitizen commit',
+  exec: 'npx git-cz',
 })
 
 project?.eslint?.addExtends('plugin:functional/recommended')
