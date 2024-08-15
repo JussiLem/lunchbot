@@ -1,5 +1,4 @@
 import { randomUUID } from 'crypto'
-import { Logger } from '@aws-lambda-powertools/logger'
 import {
   LexRuntimeV2Client,
   StartConversationCommand,
@@ -14,14 +13,11 @@ import {
   SQSEvent,
   SQSHandler,
 } from 'aws-lambda'
+import { logger, metrics } from './powertools'
 import { ensureError } from '../ensureError'
 
 const lexClient = new LexRuntimeV2Client({
   region: 'eu-west-1',
-})
-
-const logger = new Logger({
-  serviceName: 'listen-slack-events',
 })
 
 /**
@@ -123,7 +119,7 @@ export const handler: SQSHandler = async (
 ): Promise<SQSBatchResponse> => {
   // Add context to logger
   logger.addContext(context)
-
+  metrics.captureColdStartMetric()
   // Process all records concurrently
   const promises: Promise<SQSBatchItemFailure | null>[] =
     event.Records.map(handleRecord)
