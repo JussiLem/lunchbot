@@ -137,6 +137,6 @@ jobs:
 
           \          echo \"Deploying...\"
 
-          \          npx cdk deploy lunchbot-dev'
+          \          npx cdk deploy lunchbot-dev
 
           \        "
