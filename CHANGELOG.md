@@ -1,3 +1,10 @@
+## [1.0.1](https://github.com/JussiLem/lunchbot/compare/v1.0.0...v1.0.1) (2024-08-15)
+
+
+### Bug Fixes
+
+* **release:** added default cdk envs ([4579433](https://github.com/JussiLem/lunchbot/commit/457943351bab47a74f7a5bfbae19e0bcce338cf3))
+
 # 1.0.0 (2024-08-15)
 
 
