@@ -52,6 +52,7 @@ project?.eslint?.addExtends('plugin:functional/recommended')
 
 project?.eslint?.addRules({
   'functional/no-expression-statements': 'off',
+  'functional/no-return-void': 'off',
   'functional/no-classes': 'off',
   'functional/prefer-immutable-types': [
     'off',
