@@ -1,3 +1,10 @@
+## [1.0.10](https://github.com/JussiLem/lunchbot/compare/v1.0.9...v1.0.10) (2024-08-16)
+
+
+### Bug Fixes
+
+* **release:** adjusting the action permissions ([f40b42e](https://github.com/JussiLem/lunchbot/commit/f40b42edf18c15df021a4a662d61bca995d76bb5))
+
 ## [1.0.9](https://github.com/JussiLem/lunchbot/compare/v1.0.8...v1.0.9) (2024-08-15)
 
 
