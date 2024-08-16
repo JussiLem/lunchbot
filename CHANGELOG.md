@@ -1,3 +1,10 @@
+## [1.0.13](https://github.com/JussiLem/lunchbot/compare/v1.0.12...v1.0.13) (2024-08-16)
+
+
+### Bug Fixes
+
+* **release:** added secret validation ([64c7fc1](https://github.com/JussiLem/lunchbot/commit/64c7fc1efb31f0170824f2130cefd08b518d7544))
+
 ## [1.0.12](https://github.com/JussiLem/lunchbot/compare/v1.0.11...v1.0.12) (2024-08-16)
 
 
