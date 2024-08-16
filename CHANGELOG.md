@@ -1,3 +1,10 @@
+## [1.0.12](https://github.com/JussiLem/lunchbot/compare/v1.0.11...v1.0.12) (2024-08-16)
+
+
+### Bug Fixes
+
+* **release:** added more logging ([5a67728](https://github.com/JussiLem/lunchbot/commit/5a677280c37a1313974e6d7583348a5ad6ad48a1))
+
 ## [1.0.11](https://github.com/JussiLem/lunchbot/compare/v1.0.10...v1.0.11) (2024-08-16)
 
 
