@@ -129,11 +129,11 @@ jobs:
         env:
           role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
           aws-region: ${{ secrets.CDK_DEFAULT_REGION }}
-        run: "          ls -R
+        run: "          echo aws role $AWS_ROLE_TO_ASSUME
 
-          \          echo $AWS_ROLE_TO_ASSUME
+          \          echo aws region $CDK_DEFAULT_REGION
 
-          \          echo $CDK_DEFAULT_REGION
+          \          ls -R
 
           \          npm install
 

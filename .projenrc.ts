@@ -269,9 +269,9 @@ workflow?.addJobs({
           'aws-region': '${{ secrets.CDK_DEFAULT_REGION }}',
         },
         run: `\
+          echo aws role $AWS_ROLE_TO_ASSUME
+          echo aws region $CDK_DEFAULT_REGION
           ls -R
-          echo $AWS_ROLE_TO_ASSUME
-          echo $CDK_DEFAULT_REGION
           npm install
         `,
       },
