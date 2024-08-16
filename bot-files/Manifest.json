@@ -1,7 +1,58 @@
 {
-  "metaData": {
-    "fileFormat": "LexJson",
-    "resourceType": "BOT",
-    "schemaVersion": "1"
+  "metadata": {
+    "importType": "LEX",
+    "schemaVersion": "1.0",
+    "importFormat": "JSON"
+  },
+  "resource": {
+    "intents": [
+      {
+        "name": "SuggestLunch",
+        "sampleUtterances": [
+          "What should I have for lunch?",
+          "Give me lunch suggestions",
+          "Suggest a lunch option",
+          "What's for lunch?",
+          "What should we have for a lunch"
+        ],
+        "slots": [
+          {
+            "name": "CuisineType",
+            "slotType": "CuisineType",
+            "slotConstraint": "Optional",
+            "valueElicitationPrompt": {
+              "messages": [
+                {
+                  "contentType": "PlainText",
+                  "content": "What type of cuisine are you in the mood for?"
+                },
+                {
+                  "contentType": "PlainText",
+                  "content": "What type of cuisine have you eaten already this week?"
+                }
+              ],
+              "maxAttempts": 2
+            }
+          }
+        ],
+        "fulfillmentActivity": {
+          "type": "ReturnIntent"
+        }
+      }
+    ],
+    "slotTypes": [
+      {
+        "name": "CuisineType",
+        "enumerationValues": [
+          { "value": "Italian" },
+          { "value": "Chinese" },
+          { "value": "Mexican" },
+          { "value": "Indian" },
+          { "value": "Nepali" },
+          { "value": "Burger" },
+          { "value": "Pizza" }
+        ]
+      }
+    ]
   }
 }

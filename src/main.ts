@@ -65,7 +65,7 @@ export class LunchBotStack extends Stack {
           botVersionLocaleDetails: {
             sourceBotVersion: 'DRAFT',
           },
-          localeId: 'fi_FI',
+          localeId: 'en_US',
         },
       ],
     })
@@ -77,7 +77,7 @@ export class LunchBotStack extends Stack {
           botAliasLocaleSetting: {
             enabled: true,
           },
-          localeId: 'fi_FI',
+          localeId: 'en_US',
         },
       ],
       botVersion: botVersion.getAtt('BotVersion').toString(),
