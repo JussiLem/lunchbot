@@ -298,7 +298,7 @@ workflow?.addJobs({
         run: `\
           ls -R cdk.out
           echo "Deploying..."
-          npx cdk deploy lunchbot-dev
+          npx cdk deploy lunchbot-dev --require-approval never
         `,
       },
     ],
