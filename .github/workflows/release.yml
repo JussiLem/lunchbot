@@ -126,6 +126,9 @@ jobs:
       - name: Set Permissions for cdk.out
         run: chmod -R 755 cdk.out
       - name: Install dependencies
+        env:
+          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+          aws-region: ${{ secrets.CDK_DEFAULT_REGION }}
         run: "          ls -R
 
           \          echo $AWS_ROLE_TO_ASSUME
@@ -135,9 +138,6 @@ jobs:
           \          npm install
 
           \        "
-        with:
-          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
-          aws-region: ${{ secrets.CDK_DEFAULT_REGION }}
       - name: Assume AWS Role
         uses: aws-actions/configure-aws-credentials@v3
         with:

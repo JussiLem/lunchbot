@@ -264,7 +264,7 @@ workflow?.addJobs({
       },
       {
         name: 'Install dependencies',
-        with: {
+        env: {
           'role-to-assume': '${{ secrets.AWS_ROLE_TO_ASSUME }}',
           'aws-region': '${{ secrets.CDK_DEFAULT_REGION }}',
         },
