@@ -1,3 +1,10 @@
+## [1.0.16](https://github.com/JussiLem/lunchbot/compare/v1.0.15...v1.0.16) (2024-08-16)
+
+
+### Bug Fixes
+
+* **release:** added adjustments ([b9f0d15](https://github.com/JussiLem/lunchbot/commit/b9f0d15305f1dc1645a8134eb21b0dc8808908b6))
+
 ## [1.0.15](https://github.com/JussiLem/lunchbot/compare/v1.0.14...v1.0.15) (2024-08-16)
 
 
