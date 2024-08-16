@@ -1,3 +1,11 @@
+## [1.0.11](https://github.com/JussiLem/lunchbot/compare/v1.0.10...v1.0.11) (2024-08-16)
+
+
+### Bug Fixes
+
+* **release:** added debugging for envs ([38a986c](https://github.com/JussiLem/lunchbot/commit/38a986ca7c121e3879bd330187c76e13f70ce4bd))
+* **release:** added logging for envs ([90aeea8](https://github.com/JussiLem/lunchbot/commit/90aeea88db03247f9ec66c1d8efaa10769d80027))
+
 ## [1.0.10](https://github.com/JussiLem/lunchbot/compare/v1.0.9...v1.0.10) (2024-08-16)
 
 
