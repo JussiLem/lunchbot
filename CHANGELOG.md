@@ -1,3 +1,10 @@
+## [1.0.18](https://github.com/JussiLem/lunchbot/compare/v1.0.17...v1.0.18) (2024-08-16)
+
+
+### Bug Fixes
+
+* **lunchbot:** added content for the Slots and Intents ([ad06cc9](https://github.com/JussiLem/lunchbot/commit/ad06cc9d89077c73e8bcd044be868a022446eb2b))
+
 ## [1.0.17](https://github.com/JussiLem/lunchbot/compare/v1.0.16...v1.0.17) (2024-08-16)
 
 
