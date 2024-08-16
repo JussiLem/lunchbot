@@ -1,3 +1,10 @@
+## [1.0.17](https://github.com/JussiLem/lunchbot/compare/v1.0.16...v1.0.17) (2024-08-16)
+
+
+### Bug Fixes
+
+* **release:** adjusted deploy command so no need for user input ([2088341](https://github.com/JussiLem/lunchbot/commit/2088341584413ee80d4d051d11cd251034a23ba9))
+
 ## [1.0.16](https://github.com/JussiLem/lunchbot/compare/v1.0.15...v1.0.16) (2024-08-16)
 
 
