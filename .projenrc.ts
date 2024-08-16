@@ -264,8 +264,14 @@ workflow?.addJobs({
       },
       {
         name: 'Install dependencies',
+        with: {
+          'role-to-assume': '${{ secrets.AWS_ROLE_TO_ASSUME }}',
+          'aws-region': '${{ secrets.CDK_DEFAULT_REGION }}',
+        },
         run: `\
           ls -R
+          echo $AWS_ROLE_TO_ASSUME
+          echo $CDK_DEFAULT_REGION
           npm install
         `,
       },
