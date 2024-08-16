@@ -115,6 +115,32 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20.16.0
+      - name: Validate Secrets
+        run: "        if [ -z \"${{ secrets.AWS_ROLE_TO_ASSUME }}\" ]; then
+
+          \          echo \"Error: AWS_ROLE_TO_ASSUME is not set.\"
+
+          \          exit 1
+
+          \        fi
+
+          \        if [ -z \"${{ secrets.CDK_DEFAULT_REGION }}\" ]; then
+
+          \          echo \"Error: CDK_DEFAULT_REGION is not set.\"
+
+          \          exit 1
+
+          \        fi
+
+          \        if [ -z \"${{ secrets.CDK_DEFAULT_ACCOUNT }}\" ]; then
+
+          \          echo \"Error: CDK_DEFAULT_ACCOUNT is not set.\"
+
+          \          exit 1
+
+          \        fi
+
+          \      "
       - name: Ensure cdk.out Directory is Clean
         run: rm -rf cdk.out && mkdir -p cdk.out
       - name: Download Build Artifacts
