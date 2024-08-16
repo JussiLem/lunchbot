@@ -267,6 +267,14 @@ workflow?.addJobs({
         run: 'rm -rf cdk.out && mkdir -p cdk.out',
       },
       {
+        name: 'Print GitHub Context',
+        run: `\
+          echo Ref: "$\{{ github.ref }}"'
+          echo Ref: "$\{{ github.repository }}"'
+   
+        `,
+      },
+      {
         name: 'Download Build Artifacts',
         uses: 'actions/download-artifact@v4',
         with: {
@@ -286,8 +294,6 @@ workflow?.addJobs({
           'aws-region': '${{ secrets.CDK_DEFAULT_REGION }}',
         },
         run: `\
-          echo aws role $AWS_ROLE_TO_ASSUME
-          echo aws region $CDK_DEFAULT_REGION
           ls -R
           npm install
         `,
