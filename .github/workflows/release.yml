@@ -103,7 +103,8 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     permissions:
-      contents: write
+      contents: read
+      deployments: read
       id-token: write
     environment: dev
     if: startsWith(github.ref, 'refs/tags/')

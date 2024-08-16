@@ -1,4 +1,4 @@
-import { awscdk, javascript } from 'projen'
+import { awscdk, github, javascript } from 'projen'
 import { JobPermission } from 'projen/lib/github/workflows-model'
 
 const project = new awscdk.AwsCdkTypeScriptApp({
@@ -229,8 +229,9 @@ workflow?.addJobs({
     runsOn: ['ubuntu-latest'],
     environment: 'dev',
     permissions: {
-      contents: JobPermission.WRITE,
-      idToken: JobPermission.WRITE,
+      contents: github.workflows.JobPermission.READ,
+      deployments: github.workflows.JobPermission.READ,
+      idToken: github.workflows.JobPermission.WRITE,
     },
     steps: [
       {
