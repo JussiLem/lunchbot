@@ -229,7 +229,7 @@ workflow?.addJobs({
     runsOn: ['ubuntu-latest'],
     environment: 'dev',
     permissions: {
-      contents: github.workflows.JobPermission.READ,
+      contents: github.workflows.JobPermission.WRITE,
       deployments: github.workflows.JobPermission.READ,
       idToken: github.workflows.JobPermission.WRITE,
     },
@@ -265,6 +265,19 @@ workflow?.addJobs({
       {
         name: 'Ensure cdk.out Directory is Clean',
         run: 'rm -rf cdk.out && mkdir -p cdk.out',
+      },
+      {
+        name: 'Retreive OIDC',
+        id: 'retrieve-token',
+        uses: 'actions/github-script@v6',
+        with: {
+          script: `\
+          const idToken = await github.actions.getIDToken()
+          console.log(\`OIDC Token: $\{idToken}\`);
+          core.setOutput("id-token", idToken);
+   
+        `,
+        },
       },
       {
         name: 'Print GitHub Context',

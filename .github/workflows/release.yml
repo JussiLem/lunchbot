@@ -103,7 +103,7 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     permissions:
-      contents: read
+      contents: write
       deployments: read
       id-token: write
     environment: dev
@@ -143,6 +143,19 @@ jobs:
           \      "
       - name: Ensure cdk.out Directory is Clean
         run: rm -rf cdk.out && mkdir -p cdk.out
+      - name: Retreive OIDC
+        id: retrieve-token
+        uses: actions/github-script@v6
+        with:
+          script: "          const idToken = await github.actions.getIDToken()
+
+            \          console.log(`OIDC Token: ${idToken}`);
+
+            \          core.setOutput(\"id-token\", idToken);
+
+            \  \ 
+
+            \        "
       - name: Print GitHub Context
         run: "          echo Ref: \"${{ github.ref }}\"'
 

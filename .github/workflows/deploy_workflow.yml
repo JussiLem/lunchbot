@@ -1,0 +1,72 @@
+name: Deploy
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      id-token: write  # Add id-token permission
+
+    steps:
+      - name: Validate Secrets
+        run: |
+          if [ -z "${{ secrets.AWS_ROLE_TO_ASSUME }}" ]; then
+            echo "Error: AWS_ROLE_TO_ASSUME is not set."
+            exit 1
+          fi
+          if [ -z "${{ secrets.CDK_DEFAULT_REGION }}" ]; then
+            echo "Error: CDK_DEFAULT_REGION is not set."
+            exit 1
+          fi
+          if [ -z "${{ secrets.CDK_DEFAULT_ACCOUNT }}" ]; then
+            echo "Error: CDK_DEFAULT_ACCOUNT is not set."
+            exit 1
+          fi
+
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          'node-version': '20.16.0'
+
+      - name: Print GitHub Context
+        run: |
+          echo "Ref: ${{ github.ref }}"
+          echo "Repo: ${{ github.repository }}" 
+
+      - name: Ensure cdk.out Directory is Clean
+        run: rm -rf cdk.out && mkdir -p cdk.out
+
+      - name: Download Build Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: build-artifacts
+          path: cdk.out
+
+      - name: Set Permissions for cdk.out
+        run: chmod -R 755 cdk.out
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v3
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+          aws-region: ${{ secrets.CDK_DEFAULT_REGION }}
+
+      - name: Deploy
+        env:
+          CDK_DEFAULT_ACCOUNT: ${{ secrets.CDK_DEFAULT_ACCOUNT }}
+          CDK_DEFAULT_REGION: ${{ secrets.CDK_DEFAULT_REGION }}
+        run: |
+          ls -R cdk.out
+          echo "Deploying..."
+          npx cdk deploy lunchbot-dev
