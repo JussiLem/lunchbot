@@ -1,6 +1,7 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { LexV2Handler, LexV2Intent, LexV2Result } from 'aws-lambda'
 import { logger } from './common/powertools'
+// eslint-disable-next-line import/no-extraneous-dependencies
 import { LexV2ScalarSlotValue, LexV2Slot } from 'aws-lambda/trigger/lex-v2'
 
 interface SuggestLunchSlots {
