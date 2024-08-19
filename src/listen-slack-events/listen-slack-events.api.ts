@@ -13,7 +13,7 @@ import {
   SQSEvent,
   SQSHandler,
 } from 'aws-lambda'
-import { logger, metrics } from './powertools'
+import { logger, metrics } from '../common/powertools'
 import { ensureError } from '../ensureError'
 
 const lexClient = new LexRuntimeV2Client({

@@ -49,7 +49,7 @@ exports[`Snapshot 1`] = `
           "S3Bucket": {
             "Fn::Sub": "[ASSET BUCKET]-\${AWS::AccountId}-\${AWS::Region}",
           },
-          "S3ObjectKey": "c5f10e8776de9c285ea449caa4b5b507bd7948fa162d659e041db19ca3968079.json",
+          "S3ObjectKey": "[ASSET ZIP]",
         },
         "DataPrivacy": {
           "ChildDirected": true,

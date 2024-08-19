@@ -3,13 +3,13 @@ import { Metrics } from '@aws-lambda-powertools/metrics'
 import { Tracer } from '@aws-lambda-powertools/tracer'
 
 export const logger = new Logger({
-  serviceName: 'listen-slack-events',
+  serviceName: process.env.SERVICE_NAME,
 })
 
 export const tracer = new Tracer({
-  serviceName: 'listen-slack-events',
+  serviceName: process.env.SERVICE_NAME,
 })
 
 export const metrics = new Metrics({
-  serviceName: 'listen-slack-events',
+  serviceName: process.env.SERVICE_NAME,
 })

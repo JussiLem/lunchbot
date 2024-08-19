@@ -1,15 +1,14 @@
-import path from 'node:path'
 import {
   App,
+  aws_iam as iam,
   aws_lambda as lambda,
   aws_lambda_nodejs as nodejs,
-  aws_iam as iam,
   aws_lex as lex,
-  aws_s3_assets as assets,
   Stack,
   StackProps,
 } from 'aws-cdk-lib'
 import { Construct } from 'constructs'
+import { botLocales } from './botLocales'
 
 export class LunchBotStack extends Stack {
   constructor(
@@ -31,27 +30,57 @@ export class LunchBotStack extends Stack {
         }),
       },
     })
-
-    const lexAssets = new assets.Asset(this, 'lexAssets', {
-      path: path.join('bot-files/Manifest.json'),
-    })
-
+    lexBotRole.addToPolicy(
+      new iam.PolicyStatement({
+        actions: [
+          'lex:*',
+          'lex:CreateBotLocale',
+          'lex:CreateBot',
+          'lex:StartImport',
+          'lex:DescribeBot',
+          'lex:DescribeBotLocale',
+          'lex:DescribeBotVersion',
+          'lex:ListBots',
+          'lex:ListBotAliases',
+          'lex:ListBotLocales',
+          'lex:ListBotVersions',
+          'lex:PutBotAlias',
+          'lex:PutBotChannelAssociation',
+        ],
+        resources: ['*'],
+      }),
+    )
+    const fulfillmentLambda = new nodejs.NodejsFunction(
+      this,
+      'fulfillmentLambda',
+      {
+        runtime: lambda.Runtime.NODEJS_20_X,
+        environment: {
+          SERVICE_NAME: 'lunchbot',
+          POWERTOOLS_LOG_LEVEL: 'DEBUG',
+        },
+        entry: 'src/fulfillment.ts',
+      },
+    )
     const lunchBot = new lex.CfnBot(this, 'LunchBot', {
       dataPrivacy: { ChildDirected: true },
       idleSessionTtlInSeconds: 300,
       name: 'LunchBot',
       roleArn: lexBotRole.roleArn,
       autoBuildBotLocales: true,
-      botFileS3Location: {
-        s3Bucket: lexAssets.s3BucketName,
-        s3ObjectKey: lexAssets.s3ObjectKey,
-      },
+      botLocales,
       testBotAliasSettings: {
         botAliasLocaleSettings: [
           {
-            localeId: 'fi_FI',
+            localeId: 'en_US',
             botAliasLocaleSetting: {
               enabled: true,
+              codeHookSpecification: {
+                lambdaCodeHook: {
+                  lambdaArn: fulfillmentLambda.functionArn,
+                  codeHookInterfaceVersion: '1.0',
+                },
+              },
             },
           },
         ],
@@ -69,41 +98,51 @@ export class LunchBotStack extends Stack {
         },
       ],
     })
-    const botAlias = new lex.CfnBotAlias(this, 'prodBotAlias', {
-      botAliasName: 'prod',
+    new lex.CfnBotAlias(this, 'devBotAlias', {
+      botAliasName: 'dev',
       botId: lunchBot.ref,
       botAliasLocaleSettings: [
         {
           botAliasLocaleSetting: {
             enabled: true,
+            codeHookSpecification: {
+              lambdaCodeHook: {
+                lambdaArn: fulfillmentLambda.functionArn,
+                codeHookInterfaceVersion: '1.0',
+              },
+            },
           },
           localeId: 'en_US',
         },
       ],
-      botVersion: botVersion.getAtt('BotVersion').toString(),
+      botVersion: botVersion.attrBotVersion,
       sentimentAnalysisSettings: { DetectSentiment: true },
     })
-    const eventLambda = new nodejs.NodejsFunction(this, 'events', {
-      runtime: lambda.Runtime.NODEJS_20_X,
-      environment: {
-        BOT_ID: botAlias.botId,
-        BOT_ALIAS_ID: botAlias.attrBotAliasId,
-        POWERTOOLS_LOG_LEVEL: 'DEBUG',
-      },
-      entry: path.join('src/listen-slack-events/listen-slack-events.api.ts'),
+    fulfillmentLambda.addPermission('Lex Invocation', {
+      principal: new iam.ServicePrincipal('lexv2.amazonaws.com'),
+      sourceArn: `arn:aws:lex:${Stack.of(this).region}:${Stack.of(this).account}:bot-alias/${lunchBot.attrId}/*`,
     })
+    // const eventLambda = new nodejs.NodejsFunction(this, 'events', {
+    //   runtime: lambda.Runtime.NODEJS_20_X,
+    //   environment: {
+    //     BOT_ID: botAlias.botId,
+    //     BOT_ALIAS_ID: botAlias.attrBotAliasId,
+    //     POWERTOOLS_LOG_LEVEL: 'DEBUG',
+    //   },
+    //   entry: path.join('src/listen-slack-events/listen-slack-events.api.ts'),
+    // })
     // Attach Lex permissions to the Lambda role
-    eventLambda.addToRolePolicy(
-      new iam.PolicyStatement({
-        actions: [
-          'lex:StartConversation',
-          // Add other Lex permissions if needed
-        ],
-        resources: [
-          `arn:aws:lex:${Stack.of(this).region}:${Stack.of(this).account}:bot-alias/${lunchBot.attrId}/*`,
-        ],
-      }),
-    )
+    // eventLambda.addToRolePolicy(
+    //   new iam.PolicyStatement({
+    //     actions: [
+    //       'lex:StartConversation',
+    //       // Add other Lex permissions if needed
+    //     ],
+    //     resources: [
+    //       `arn:aws:lex:${Stack.of(this).region}:${Stack.of(this).account}:bot-alias/${lunchBot.attrId}/*`,
+    //     ],
+    //   }),
+    // )
   }
 }
 
