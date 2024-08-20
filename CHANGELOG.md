@@ -1,3 +1,17 @@
+# [1.1.0](https://github.com/JussiLem/lunchbot/compare/v1.0.18...v1.1.0) (2024-08-20)
+
+
+### Bug Fixes
+
+* **lunchbot:** fixed depedendency issue ([7496178](https://github.com/JussiLem/lunchbot/commit/74961784dce38e9b87e3e76f234a1225cf7de046))
+* **lunchbot:** fixed dependency ([3df8b43](https://github.com/JussiLem/lunchbot/commit/3df8b43c5cda09721fa65811c8d5a251b46ccb81))
+* **lunchbot:** fixed unit tests ([0d483e1](https://github.com/JussiLem/lunchbot/commit/0d483e187c369429b83bacd47ca9977509cc76d7))
+
+
+### Features
+
+* **lunchbot:** added passthrough lambda for fulfillment ([19f95a8](https://github.com/JussiLem/lunchbot/commit/19f95a8c8bb5268844ebf045bf12bf1c274df990))
+
 ## [1.0.18](https://github.com/JussiLem/lunchbot/compare/v1.0.17...v1.0.18) (2024-08-16)
 
 
