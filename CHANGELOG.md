@@ -1,3 +1,15 @@
+# [1.2.0](https://github.com/JussiLem/lunchbot/compare/v1.1.0...v1.2.0) (2024-08-20)
+
+
+### Bug Fixes
+
+* **lunchbot:** fixed unit test ([4fd5c29](https://github.com/JussiLem/lunchbot/commit/4fd5c29c7c8fb0ba71ffe1f8c6737f4033d9dc88))
+
+
+### Features
+
+* **lunchbot:** added office location as first option ([ed22f09](https://github.com/JussiLem/lunchbot/commit/ed22f09300fdcf30c0aadc56dcb2b289a49f3995))
+
 # [1.1.0](https://github.com/JussiLem/lunchbot/compare/v1.0.18...v1.1.0) (2024-08-20)
 
 
