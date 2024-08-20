@@ -5,7 +5,7 @@ interface Restaurant {
 }
 
 interface RestaurantOption {
-  lunchType: string
+  cuisineType: string
   restaurants: Restaurant[]
 }
 

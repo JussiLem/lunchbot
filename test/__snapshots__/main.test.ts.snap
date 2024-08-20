@@ -379,7 +379,7 @@ exports[`Snapshot 1`] = `
       "Type": "AWS::Lex::BotVersion",
     },
     "LunchTable7FFF0497": {
-      "DeletionPolicy": "Retain",
+      "DeletionPolicy": "Delete",
       "Properties": {
         "AttributeDefinitions": [
           {
@@ -415,6 +415,10 @@ exports[`Snapshot 1`] = `
             "AttributeName": "officeLocation",
             "KeyType": "HASH",
           },
+          {
+            "AttributeName": "cuisineType",
+            "KeyType": "RANGE",
+          },
         ],
         "Replicas": [
           {
@@ -430,7 +434,7 @@ exports[`Snapshot 1`] = `
         ],
       },
       "Type": "AWS::DynamoDB::GlobalTable",
-      "UpdateReplacePolicy": "Retain",
+      "UpdateReplacePolicy": "Delete",
     },
     "devBotAlias": {
       "Properties": {

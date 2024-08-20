@@ -54,10 +54,13 @@ const isSlotValue = (slot: LexV2Slot): slot is LexV2ScalarSlotValue => {
 const queryDynamoDb = async (input: QueryCommandInput): Promise<string[]> => {
   try {
     const result = await dbClient.send(new QueryCommand(input))
-    if (result.Items?.length) {
-      return result.Items[0] as string[]
+    if (!(result.Items && result.Items.length > 0)) {
+      return [] // No items found
     }
-    return []
+    // Parse the results to get cuisine types
+    const cuisineTypes = result.Items.map((item) => item.cuisineType)
+
+    return cuisineTypes
   } catch (error) {
     throw new Error(`Query failed: ${(error as Error).message}`)
   }
@@ -72,7 +75,6 @@ const getCuisineTypesForOfficeLocation = async (
   try {
     const input: QueryCommandInput = {
       TableName: process.env.LUNCH_TABLE!,
-      IndexName: 'GSI_OfficeLocation_CuisineType', // Replace with your actual GSI name
       KeyConditionExpression: 'officeLocation = :officeLocation',
       ExpressionAttributeValues: {
         ':officeLocation': officeLocation,
@@ -91,11 +93,11 @@ const createLexMessages = (
   officeLocation: string,
   supportedLunchTypes: string[],
 ): LexV2Message[] => {
-  if (!supportedLunchTypes.length) {
+  if (supportedLunchTypes.length === 0) {
     return [
       {
         contentType: 'PlainText',
-        content: `no lunch places found for given location: ${officeLocation}`,
+        content: `no lunch places found for ${officeLocation}`,
       } as LexV2ContentMessage,
     ]
   }
@@ -135,6 +137,47 @@ const delegate = (
   messages,
 })
 
+const createElicitSlotAction = (
+  slotToElicit: string,
+  sessionAttributes: Record<string, string> | undefined,
+  intent: LexV2Intent,
+  messages: LexV2Message[],
+): LexV2Result => {
+  return {
+    sessionState: {
+      intent,
+      sessionAttributes: {
+        ...sessionAttributes,
+      },
+      dialogAction: {
+        type: 'ElicitSlot',
+        slotToElicit,
+        slotElicitationStyle: 'Default',
+      },
+    },
+    messages,
+  }
+}
+
+const createCloseAction = (
+  sessionAttributes: Record<string, string> | undefined,
+  intent: LexV2Intent,
+  messages: LexV2Message[],
+): LexV2Result => {
+  return {
+    sessionState: {
+      intent,
+      sessionAttributes: {
+        ...sessionAttributes,
+      },
+      dialogAction: {
+        type: 'Close',
+      },
+    },
+    messages,
+  }
+}
+
 const processSlots = async (
   slots: SuggestLunchSlots,
   intent: LexV2Intent,
@@ -146,15 +189,32 @@ const processSlots = async (
     if (!officeLocation) {
       throw new Error('Office location is missing')
     }
-    const supportedLunchTypes =
+    const supportedCuisineTypes =
       await getCuisineTypesForOfficeLocation(officeLocation)
-    const messages = createLexMessages(officeLocation, supportedLunchTypes)
-    const dialogActionType = supportedLunchTypes.length ? 'Delegate' : 'Close'
-    return delegate(sessionAttributes, intent, messages, dialogActionType)
+    logger.info('Found cuisineTypes', { supportedCuisineTypes })
+    const messages = createLexMessages(officeLocation, supportedCuisineTypes)
+    if (supportedCuisineTypes.length) {
+      return createElicitSlotAction(
+        'CuisineType',
+        sessionAttributes,
+        intent,
+        messages,
+      )
+    } else {
+      return createCloseAction(sessionAttributes, intent, messages)
+    }
   }
+
   if (slots.CuisineType && isSlotValue(slots.CuisineType)) {
+    const cuisineType = slots.CuisineType.value.interpretedValue
+    logger.info('CuisineType detected', { cuisineType })
+    // Logic to process 'CuisineType' and move to the next relevant step
+
+    // Assume you have other slots to fill or a finalization step
+    // Replace this logic as needed to move to the next step
     return delegate(sessionAttributes, intent)
   }
+
   throw new Error('Unable to find the office location')
 }
 

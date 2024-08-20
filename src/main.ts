@@ -5,6 +5,7 @@ import {
   aws_lambda as lambda,
   aws_lambda_nodejs as nodejs,
   aws_lex as lex,
+  RemovalPolicy,
   Stack,
   StackProps,
 } from 'aws-cdk-lib'
@@ -57,6 +58,8 @@ export class LunchBotStack extends Stack {
         type: dynamodb.AttributeType.STRING,
         name: 'officeLocation',
       },
+      removalPolicy: RemovalPolicy.DESTROY,
+      sortKey: { name: 'cuisineType', type: dynamodb.AttributeType.STRING },
       globalSecondaryIndexes: [
         {
           indexName: 'GSI_OfficeLocation_CuisineType',
