@@ -1,3 +1,10 @@
+# [1.3.0](https://github.com/JussiLem/lunchbot/compare/v1.2.0...v1.3.0) (2024-08-20)
+
+
+### Features
+
+* **lunchbot:** return possible cuisine types for user ([0d8ba65](https://github.com/JussiLem/lunchbot/commit/0d8ba654ebc272057f9a8180b37fca79f40da2c4))
+
 # [1.2.0](https://github.com/JussiLem/lunchbot/compare/v1.1.0...v1.2.0) (2024-08-20)
 
 
