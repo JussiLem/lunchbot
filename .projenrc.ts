@@ -24,6 +24,8 @@ const project = new awscdk.AwsCdkTypeScriptApp({
     '@aws-lambda-powertools/tracer',
     '@middy/core',
     '@aws-sdk/client-lex-runtime-v2',
+    '@aws-sdk/client-dynamodb',
+    '@aws-sdk/lib-dynamodb',
   ],
   devDeps: [
     'eslint-plugin-functional@6.6.3',

@@ -63,7 +63,9 @@
     "@aws-lambda-powertools/logger": "^2.7.0",
     "@aws-lambda-powertools/metrics": "^2.7.0",
     "@aws-lambda-powertools/tracer": "^2.7.0",
+    "@aws-sdk/client-dynamodb": "^3.632.0",
     "@aws-sdk/client-lex-runtime-v2": "^3.629.0",
+    "@aws-sdk/lib-dynamodb": "^3.632.0",
     "@middy/core": "^5.4.6",
     "aws-cdk-lib": "^2.1.0",
     "constructs": "^10.0.5"

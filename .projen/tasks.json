@@ -229,13 +229,13 @@
       },
       "steps": [
         {
-          "exec": "npx npm-check-updates@16 --upgrade --target=minor --peer --dep=dev,peer,prod,optional --filter=@semantic-release/changelog,@semantic-release/git,@semantic-release/github,@semantic-release/npm,@types/aws-lambda,@types/jest,commitizen,cz-conventional-changelog,esbuild,eslint-config-prettier,eslint-import-resolver-typescript,eslint-plugin-import,eslint-plugin-prettier,jest,prettier,projen,semantic-release,ts-jest,ts-node,typescript,@aws-lambda-powertools/logger,@aws-lambda-powertools/metrics,@aws-lambda-powertools/tracer,@aws-sdk/client-lex-runtime-v2,@middy/core"
+          "exec": "npx npm-check-updates@16 --upgrade --target=minor --peer --dep=dev,peer,prod,optional --filter=@semantic-release/changelog,@semantic-release/git,@semantic-release/github,@semantic-release/npm,@types/aws-lambda,@types/jest,commitizen,cz-conventional-changelog,esbuild,eslint-config-prettier,eslint-import-resolver-typescript,eslint-plugin-import,eslint-plugin-prettier,jest,prettier,projen,semantic-release,ts-jest,ts-node,typescript,@aws-lambda-powertools/logger,@aws-lambda-powertools/metrics,@aws-lambda-powertools/tracer,@aws-sdk/client-dynamodb,@aws-sdk/client-lex-runtime-v2,@aws-sdk/lib-dynamodb,@middy/core"
         },
         {
           "exec": "npm install"
         },
         {
-          "exec": "npm update @semantic-release/changelog @semantic-release/git @semantic-release/github @semantic-release/npm @types/aws-lambda @types/jest @types/node @typescript-eslint/eslint-plugin @typescript-eslint/parser aws-cdk commitizen cz-conventional-changelog esbuild eslint-config-prettier eslint-import-resolver-typescript eslint-plugin-functional eslint-plugin-import eslint-plugin-prettier eslint jest jest-junit prettier projen semantic-release ts-jest ts-node typescript @aws-lambda-powertools/logger @aws-lambda-powertools/metrics @aws-lambda-powertools/tracer @aws-sdk/client-lex-runtime-v2 @middy/core aws-cdk-lib constructs"
+          "exec": "npm update @semantic-release/changelog @semantic-release/git @semantic-release/github @semantic-release/npm @types/aws-lambda @types/jest @types/node @typescript-eslint/eslint-plugin @typescript-eslint/parser aws-cdk commitizen cz-conventional-changelog esbuild eslint-config-prettier eslint-import-resolver-typescript eslint-plugin-functional eslint-plugin-import eslint-plugin-prettier eslint jest jest-junit prettier projen semantic-release ts-jest ts-node typescript @aws-lambda-powertools/logger @aws-lambda-powertools/metrics @aws-lambda-powertools/tracer @aws-sdk/client-dynamodb @aws-sdk/client-lex-runtime-v2 @aws-sdk/lib-dynamodb @middy/core aws-cdk-lib constructs"
         },
         {
           "exec": "npx projen"

@@ -15,73 +15,122 @@ const intents: lex.CfnBot.IntentProperty[] = [
       { utterance: 'Suggest a lunch option' },
       { utterance: "What's for lunch?" },
     ],
+    // initialResponseSetting: {
+    //   nextStep: {
+    //     dialogAction: {
+    //       type: 'InvokeDialogCodeHook',
+    //     },
+    //   },
+    //   codeHook: {
+    //     invocationLabel: 'InitialResponse',
+    //     enableCodeHookInvocation: true,
+    //     isActive: true,
+    //     postCodeHookSpecification: {
+    //       failureNextStep: {
+    //         dialogAction: {
+    //           type: 'ElicitSlot',
+    //           slotToElicit: 'CuisineType',
+    //         },
+    //       },
+    //       successNextStep: {
+    //         dialogAction: {
+    //           type: 'ElicitSlot',
+    //           slotToElicit: 'CuisineType',
+    //         },
+    //       },
+    //       timeoutNextStep: {
+    //         dialogAction: {
+    //           type: 'EndConversation',
+    //         },
+    //       },
+    //       timeoutResponse: {
+    //         messageGroupsList: [
+    //           {
+    //             message: {
+    //               plainTextMessage: {
+    //                 value:
+    //                   'Sorry, I took too long to respond. Can you tell me again?',
+    //               },
+    //             },
+    //           },
+    //         ],
+    //       },
+    //       failureResponse: {
+    //         messageGroupsList: [
+    //           {
+    //             message: {
+    //               plainTextMessage: {
+    //                 value:
+    //                   "Sorry, I couldn't understand. Could you please repeat?",
+    //               },
+    //             },
+    //           },
+    //         ],
+    //       },
+    //     },
+    //   },
+    //   initialResponse: {
+    //     messageGroupsList: [
+    //       {
+    //         message: {
+    //           imageResponseCard: {
+    //             title: 'In which office do you reside in?',
+    //             buttons: [
+    //               {
+    //                 text: 'Kamppi',
+    //                 value: 'Kamppi',
+    //               },
+    //               {
+    //                 text: 'Hakaniemi',
+    //                 value: 'Hakaniemi',
+    //               },
+    //             ],
+    //           },
+    //         },
+    //       },
+    //     ],
+    //   },
+    // },
     initialResponseSetting: {
       nextStep: {
         dialogAction: {
-          type: 'InvokeDialogCodeHook',
+          type: 'ElicitSlot',
+          slotToElicit: 'OfficeLocation',
         },
-      },
-      codeHook: {
-        invocationLabel: 'InitialResponse',
-        enableCodeHookInvocation: true,
-        isActive: true,
-        postCodeHookSpecification: {
-          failureNextStep: {
-            dialogAction: {
-              type: 'ElicitSlot',
-              slotToElicit: 'CuisineType',
-            },
-          },
-          successNextStep: {
-            dialogAction: {
-              type: 'ElicitSlot',
-              slotToElicit: 'CuisineType',
-            },
-          },
-          timeoutNextStep: {
-            dialogAction: {
-              type: 'EndConversation',
-            },
-          },
-          timeoutResponse: {
-            messageGroupsList: [
-              {
-                message: {
-                  plainTextMessage: {
-                    value:
-                      'Sorry, I took too long to respond. Can you tell me again?',
-                  },
-                },
-              },
-            ],
-          },
-          failureResponse: {
-            messageGroupsList: [
-              {
-                message: {
-                  plainTextMessage: {
-                    value:
-                      "Sorry, I couldn't understand. Could you please repeat?",
-                  },
-                },
-              },
-            ],
-          },
-        },
-      },
-      initialResponse: {
-        messageGroupsList: [
-          {
-            message: {
-              plainTextMessage: {
-                value: 'What type of cuisine are you in the mood for?',
-              },
-            },
-          },
-        ],
       },
     },
     slots: [
+      {
+        slotTypeName: 'OfficeLocations',
+        name: 'OfficeLocation',
+        valueElicitationSetting: {
+          slotConstraint: 'Required',
+          promptSpecification: {
+            maxRetries: 2,
+            messageGroupsList: [
+              {
+                message: {
+                  imageResponseCard: {
+                    title: 'Select your office location',
+                    imageUrl:
+                      'https://www.sttinfo.fi/data/images/public/69817246/70096437/ff783596-4db9-40be-bd62-d1ab7b1d75c1-w_960.jpg',
+                    buttons: [
+                      {
+                        text: 'Kamppi',
+                        value: 'Kamppi',
+                      },
+                      {
+                        text: 'Hakaniemi',
+                        value: 'Hakaniemi',
+                      },
+                    ],
+                  },
+                },
+              },
+            ],
+          },
+        },
+      },
       {
         slotTypeName: 'CuisineType',
         name: 'CuisineType',
@@ -141,14 +190,18 @@ const intents: lex.CfnBot.IntentProperty[] = [
     slotPriorities: [
       {
         priority: 1,
-        slotName: 'CuisineType',
+        slotName: 'OfficeLocation',
       },
       {
         priority: 2,
-        slotName: 'DietaryRestrictions',
+        slotName: 'CuisineType',
       },
       {
         priority: 3,
+        slotName: 'DietaryRestrictions',
+      },
+      {
+        priority: 4,
         slotName: 'Budget',
       },
     ],
@@ -161,6 +214,17 @@ export const botLocales: lex.CfnBot.BotLocaleProperty[] = [
     nluConfidenceThreshold: 0.4,
     intents,
     slotTypes: [
+      {
+        name: 'OfficeLocations',
+        description: 'Office location',
+        valueSelectionSetting: {
+          resolutionStrategy: 'ORIGINAL_VALUE',
+        },
+        slotTypeValues: [
+          { sampleValue: { value: 'Kamppi' } },
+          { sampleValue: { value: 'Hakaniemi' } },
+        ],
+      },
       {
         name: 'DietaryRestrictions',
         description: 'Common dietary restrictions',

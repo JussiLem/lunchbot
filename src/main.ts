@@ -1,5 +1,6 @@
 import {
   App,
+  aws_dynamodb as dynamodb,
   aws_iam as iam,
   aws_lambda as lambda,
   aws_lambda_nodejs as nodejs,
@@ -50,6 +51,26 @@ export class LunchBotStack extends Stack {
         resources: ['*'],
       }),
     )
+
+    const lunchTable = new dynamodb.TableV2(this, 'LunchTable', {
+      partitionKey: {
+        type: dynamodb.AttributeType.STRING,
+        name: 'officeLocation',
+      },
+      globalSecondaryIndexes: [
+        {
+          indexName: 'GSI_OfficeLocation_CuisineType',
+          partitionKey: {
+            type: dynamodb.AttributeType.STRING,
+            name: 'officeLocation',
+          },
+          sortKey: {
+            type: dynamodb.AttributeType.STRING,
+            name: 'cuisineType',
+          },
+        },
+      ],
+    })
     const fulfillmentLambda = new nodejs.NodejsFunction(
       this,
       'fulfillmentLambda',
@@ -58,10 +79,12 @@ export class LunchBotStack extends Stack {
         environment: {
           SERVICE_NAME: 'lunchbot',
           POWERTOOLS_LOG_LEVEL: 'DEBUG',
+          LUNCH_TABLE: lunchTable.tableName,
         },
         entry: 'src/fulfillment.ts',
       },
     )
+    lunchTable.grantReadData(fulfillmentLambda)
     const lunchBot = new lex.CfnBot(this, 'LunchBot', {
       dataPrivacy: { ChildDirected: true },
       idleSessionTtlInSeconds: 300,

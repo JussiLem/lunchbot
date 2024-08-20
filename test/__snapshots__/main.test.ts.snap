@@ -199,18 +199,54 @@ exports[`Snapshot 1`] = `
                 "SlotPriorities": [
                   {
                     "Priority": 1,
-                    "SlotName": "CuisineType",
+                    "SlotName": "OfficeLocation",
                   },
                   {
                     "Priority": 2,
-                    "SlotName": "DietaryRestrictions",
+                    "SlotName": "CuisineType",
                   },
                   {
                     "Priority": 3,
+                    "SlotName": "DietaryRestrictions",
+                  },
+                  {
+                    "Priority": 4,
                     "SlotName": "Budget",
                   },
                 ],
                 "Slots": [
+                  {
+                    "Name": "OfficeLocation",
+                    "SlotTypeName": "OfficeLocations",
+                    "ValueElicitationSetting": {
+                      "PromptSpecification": {
+                        "MaxRetries": 2,
+                        "MessageGroupsList": [
+                          {
+                            "Message": {
+                              "ImageResponseCard": {
+                                "Buttons": [
+                                  {
+                                    "Text": "Kamppi",
+                                    "Value": "Kamppi",
+                                  },
+                                  {
+                                    "Text": "Hakaniemi",
+                                    "Value": "Hakaniemi",
+                                  },
+                                ],
+                                "Title": "Office location",
+                              },
+                              "PlainTextMessage": {
+                                "Value": "In which office do you reside in?",
+                              },
+                            },
+                          },
+                        ],
+                      },
+                      "SlotConstraint": "Required",
+                    },
+                  },
                   {
                     "Name": "CuisineType",
                     "SlotTypeName": "CuisineType",
@@ -274,6 +310,25 @@ exports[`Snapshot 1`] = `
             "LocaleId": "en_US",
             "NluConfidenceThreshold": 0.4,
             "SlotTypes": [
+              {
+                "Description": "Office location",
+                "Name": "OfficeLocations",
+                "SlotTypeValues": [
+                  {
+                    "SampleValue": {
+                      "Value": "Kamppi",
+                    },
+                  },
+                  {
+                    "SampleValue": {
+                      "Value": "Hakaniemi",
+                    },
+                  },
+                ],
+                "ValueSelectionSetting": {
+                  "ResolutionStrategy": "ORIGINAL_VALUE",
+                },
+              },
               {
                 "Description": "Common dietary restrictions",
                 "Name": "DietaryRestrictions",
@@ -381,6 +436,60 @@ exports[`Snapshot 1`] = `
       },
       "Type": "AWS::Lex::BotVersion",
     },
+    "LunchTable7FFF0497": {
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "AttributeDefinitions": [
+          {
+            "AttributeName": "officeLocation",
+            "AttributeType": "S",
+          },
+          {
+            "AttributeName": "lunchType",
+            "AttributeType": "S",
+          },
+        ],
+        "BillingMode": "PAY_PER_REQUEST",
+        "GlobalSecondaryIndexes": [
+          {
+            "IndexName": "GSI_OfficeLocation_LunchType",
+            "KeySchema": [
+              {
+                "AttributeName": "officeLocation",
+                "KeyType": "HASH",
+              },
+              {
+                "AttributeName": "lunchType",
+                "KeyType": "RANGE",
+              },
+            ],
+            "Projection": {
+              "ProjectionType": "ALL",
+            },
+          },
+        ],
+        "KeySchema": [
+          {
+            "AttributeName": "officeLocation",
+            "KeyType": "HASH",
+          },
+        ],
+        "Replicas": [
+          {
+            "GlobalSecondaryIndexes": [
+              {
+                "IndexName": "GSI_OfficeLocation_LunchType",
+              },
+            ],
+            "Region": {
+              "Ref": "AWS::Region",
+            },
+          },
+        ],
+      },
+      "Type": "AWS::DynamoDB::GlobalTable",
+      "UpdateReplacePolicy": "Retain",
+    },
     "devBotAlias": {
       "Properties": {
         "BotAliasLocaleSettings": [
@@ -420,6 +529,7 @@ exports[`Snapshot 1`] = `
     },
     "fulfillmentLambdaD5A69AC0": {
       "DependsOn": [
+        "fulfillmentLambdaServiceRoleDefaultPolicyC6D483E7",
         "fulfillmentLambdaServiceRoleF81C74B1",
       ],
       "Properties": {
@@ -431,6 +541,9 @@ exports[`Snapshot 1`] = `
         },
         "Environment": {
           "Variables": {
+            "LUNCH_TABLE": {
+              "Ref": "LunchTable7FFF0497",
+            },
             "POWERTOOLS_LOG_LEVEL": "DEBUG",
             "SERVICE_NAME": "lunchbot",
           },
@@ -481,6 +594,57 @@ exports[`Snapshot 1`] = `
         },
       },
       "Type": "AWS::Lambda::Permission",
+    },
+    "fulfillmentLambdaServiceRoleDefaultPolicyC6D483E7": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "dynamodb:BatchGetItem",
+                "dynamodb:GetRecords",
+                "dynamodb:GetShardIterator",
+                "dynamodb:Query",
+                "dynamodb:GetItem",
+                "dynamodb:Scan",
+                "dynamodb:ConditionCheckItem",
+                "dynamodb:DescribeTable",
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "LunchTable7FFF0497",
+                    "Arn",
+                  ],
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "LunchTable7FFF0497",
+                          "Arn",
+                        ],
+                      },
+                      "/index/*",
+                    ],
+                  ],
+                },
+              ],
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "fulfillmentLambdaServiceRoleDefaultPolicyC6D483E7",
+        "Roles": [
+          {
+            "Ref": "fulfillmentLambdaServiceRoleF81C74B1",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
     },
     "fulfillmentLambdaServiceRoleF81C74B1": {
       "Properties": {
