@@ -118,66 +118,10 @@ exports[`Snapshot 1`] = `
                   "Enabled": true,
                 },
                 "InitialResponseSetting": {
-                  "CodeHook": {
-                    "EnableCodeHookInvocation": true,
-                    "InvocationLabel": "InitialResponse",
-                    "IsActive": true,
-                    "PostCodeHookSpecification": {
-                      "FailureNextStep": {
-                        "DialogAction": {
-                          "SlotToElicit": "CuisineType",
-                          "Type": "ElicitSlot",
-                        },
-                      },
-                      "FailureResponse": {
-                        "MessageGroupsList": [
-                          {
-                            "Message": {
-                              "PlainTextMessage": {
-                                "Value": "Sorry, I couldn't understand. Could you please repeat?",
-                              },
-                            },
-                          },
-                        ],
-                      },
-                      "SuccessNextStep": {
-                        "DialogAction": {
-                          "SlotToElicit": "CuisineType",
-                          "Type": "ElicitSlot",
-                        },
-                      },
-                      "TimeoutNextStep": {
-                        "DialogAction": {
-                          "Type": "EndConversation",
-                        },
-                      },
-                      "TimeoutResponse": {
-                        "MessageGroupsList": [
-                          {
-                            "Message": {
-                              "PlainTextMessage": {
-                                "Value": "Sorry, I took too long to respond. Can you tell me again?",
-                              },
-                            },
-                          },
-                        ],
-                      },
-                    },
-                  },
-                  "InitialResponse": {
-                    "MessageGroupsList": [
-                      {
-                        "Message": {
-                          "PlainTextMessage": {
-                            "Value": "What type of cuisine are you in the mood for?",
-                          },
-                        },
-                      },
-                    ],
-                  },
                   "NextStep": {
                     "DialogAction": {
-                      "Type": "InvokeDialogCodeHook",
+                      "SlotToElicit": "OfficeLocation",
+                      "Type": "ElicitSlot",
                     },
                   },
                 },
@@ -235,10 +179,8 @@ exports[`Snapshot 1`] = `
                                     "Value": "Hakaniemi",
                                   },
                                 ],
-                                "Title": "Office location",
-                              },
-                              "PlainTextMessage": {
-                                "Value": "In which office do you reside in?",
+                                "ImageUrl": "https://www.sttinfo.fi/data/images/public/69817246/70096437/ff783596-4db9-40be-bd62-d1ab7b1d75c1-w_960.jpg",
+                                "Title": "Select your office location",
                               },
                             },
                           },
@@ -445,21 +387,21 @@ exports[`Snapshot 1`] = `
             "AttributeType": "S",
           },
           {
-            "AttributeName": "lunchType",
+            "AttributeName": "cuisineType",
             "AttributeType": "S",
           },
         ],
         "BillingMode": "PAY_PER_REQUEST",
         "GlobalSecondaryIndexes": [
           {
-            "IndexName": "GSI_OfficeLocation_LunchType",
+            "IndexName": "GSI_OfficeLocation_CuisineType",
             "KeySchema": [
               {
                 "AttributeName": "officeLocation",
                 "KeyType": "HASH",
               },
               {
-                "AttributeName": "lunchType",
+                "AttributeName": "cuisineType",
                 "KeyType": "RANGE",
               },
             ],
@@ -478,7 +420,7 @@ exports[`Snapshot 1`] = `
           {
             "GlobalSecondaryIndexes": [
               {
-                "IndexName": "GSI_OfficeLocation_LunchType",
+                "IndexName": "GSI_OfficeLocation_CuisineType",
               },
             ],
             "Region": {
