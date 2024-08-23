@@ -84,7 +84,7 @@ export class LunchBotStack extends Stack {
           POWERTOOLS_LOG_LEVEL: 'DEBUG',
           LUNCH_TABLE: lunchTable.tableName,
         },
-        entry: 'src/fulfillment.ts',
+        entry: 'src/fulfillment/fulfillment.ts',
       },
     )
     lunchTable.grantReadData(fulfillmentLambda)

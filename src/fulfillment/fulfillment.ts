@@ -1,9 +1,4 @@
-import { DynamoDBClient } from '@aws-sdk/client-dynamodb'
-import {
-  DynamoDBDocumentClient,
-  QueryCommand,
-  QueryCommandInput,
-} from '@aws-sdk/lib-dynamodb'
+import { QueryCommand, QueryCommandInput } from '@aws-sdk/lib-dynamodb'
 // eslint-disable-next-line import/no-extraneous-dependencies
 import {
   LexV2Handler,
@@ -19,37 +14,26 @@ import {
   LexV2ScalarSlotValue,
   LexV2Slot,
 } from 'aws-lambda/trigger/lex-v2'
-import { logger, tracer } from './common/powertools'
-import { ensureError } from './ensureError'
-
-export const dbClient = tracer.captureAWSv3Client(
-  DynamoDBDocumentClient.from(
-    new DynamoDBClient({
-      region: process.env.AWS_REGION,
-    }),
-  ),
-)
+import { dbClient } from '../common/dbClient'
+import { logger } from '../common/powertools'
+import { ensureError } from '../ensureError'
 
 interface SuggestLunchSlots {
-  OfficeLocation?: LexV2ScalarSlotValue | null
-  CuisineType?: LexV2ScalarSlotValue | null
-  DietaryRestrictions?: LexV2ScalarSlotValue | null
-  Budget?: LexV2ScalarSlotValue | null
+  OfficeLocation: LexV2ScalarSlotValue | null
+  CuisineType: LexV2ScalarSlotValue | null
+  DietaryRestrictions: LexV2ScalarSlotValue | null
+  Budget: LexV2ScalarSlotValue | null
 }
 
 /**
  * Type guard to ensure slot contains the expected structure
  */
-const isSlotValue = (slot: LexV2Slot): slot is LexV2ScalarSlotValue => {
-  return (
-    slot &&
-    typeof slot === 'object' &&
-    'value' in slot &&
-    'originalValue' in slot.value &&
-    Array.isArray(slot.value.resolvedValues) &&
-    'interpretedValue' in slot.value
-  )
-}
+const isScalarSlotValue = (slot: LexV2Slot): slot is LexV2ScalarSlotValue =>
+  Array.isArray(slot.value.resolvedValues) &&
+  typeof slot.value.interpretedValue === 'string'
+
+const isSlotValue = (slot: LexV2Slot | null): slot is LexV2ScalarSlotValue =>
+  slot !== null && isScalarSlotValue(slot)
 
 const queryDynamoDb = async (input: QueryCommandInput): Promise<string[]> => {
   try {
@@ -116,6 +100,12 @@ const createLexMessages = (
   ]
 }
 
+type NextSlotHandler = (
+  slots: SuggestLunchSlots,
+  intent: LexV2Intent,
+  sessionAttributes: Record<string, string> | undefined,
+) => Promise<LexV2Result>
+
 /**
  * Ensure session state dialog action is set to Delegate, pass everything as-is
  */
@@ -178,7 +168,7 @@ const createCloseAction = (
   }
 }
 
-const processSlots = async (
+const processSlots: NextSlotHandler = async (
   slots: SuggestLunchSlots,
   intent: LexV2Intent,
   sessionAttributes?: Record<string, string> | undefined,
@@ -233,7 +223,16 @@ export const handler: LexV2Handler = async (event): Promise<LexV2Result> => {
 
   if (slots) {
     try {
-      const suggestLunchSlots = slots as SuggestLunchSlots
+      const suggestLunchSlots: SuggestLunchSlots = {
+        OfficeLocation: isSlotValue(slots.OfficeLocation)
+          ? slots.OfficeLocation
+          : null,
+        CuisineType: isSlotValue(slots.CuisineType) ? slots.CuisineType : null,
+        DietaryRestrictions: isSlotValue(slots.DietaryRestrictions)
+          ? slots.DietaryRestrictions
+          : null,
+        Budget: isSlotValue(slots.Budget) ? slots.Budget : null,
+      }
       if (
         suggestLunchSlots.OfficeLocation &&
         isSlotValue(suggestLunchSlots.OfficeLocation)
