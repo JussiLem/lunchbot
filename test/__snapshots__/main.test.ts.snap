@@ -347,7 +347,7 @@ exports[`Snapshot 1`] = `
                     "CodeHookInterfaceVersion": "1.0",
                     "LambdaArn": {
                       "Fn::GetAtt": [
-                        "fulfillmentLambdaD5A69AC0",
+                        "LunchfulfillmentLambdaB53264CB",
                         "Arn",
                       ],
                     },
@@ -378,7 +378,42 @@ exports[`Snapshot 1`] = `
       },
       "Type": "AWS::Lex::BotVersion",
     },
-    "LunchTable7FFF0497": {
+    "LunchStateTable49BC594E": {
+      "DeletionPolicy": "Delete",
+      "Properties": {
+        "AttributeDefinitions": [
+          {
+            "AttributeName": "id",
+            "AttributeType": "S",
+          },
+          {
+            "AttributeName": "intentName",
+            "AttributeType": "S",
+          },
+        ],
+        "BillingMode": "PAY_PER_REQUEST",
+        "KeySchema": [
+          {
+            "AttributeName": "id",
+            "KeyType": "HASH",
+          },
+          {
+            "AttributeName": "intentName",
+            "KeyType": "RANGE",
+          },
+        ],
+        "Replicas": [
+          {
+            "Region": {
+              "Ref": "AWS::Region",
+            },
+          },
+        ],
+      },
+      "Type": "AWS::DynamoDB::GlobalTable",
+      "UpdateReplacePolicy": "Delete",
+    },
+    "LunchTableFC372FD3": {
       "DeletionPolicy": "Delete",
       "Properties": {
         "AttributeDefinitions": [
@@ -436,47 +471,10 @@ exports[`Snapshot 1`] = `
       "Type": "AWS::DynamoDB::GlobalTable",
       "UpdateReplacePolicy": "Delete",
     },
-    "devBotAlias": {
-      "Properties": {
-        "BotAliasLocaleSettings": [
-          {
-            "BotAliasLocaleSetting": {
-              "CodeHookSpecification": {
-                "LambdaCodeHook": {
-                  "CodeHookInterfaceVersion": "1.0",
-                  "LambdaArn": {
-                    "Fn::GetAtt": [
-                      "fulfillmentLambdaD5A69AC0",
-                      "Arn",
-                    ],
-                  },
-                },
-              },
-              "Enabled": true,
-            },
-            "LocaleId": "en_US",
-          },
-        ],
-        "BotAliasName": "dev",
-        "BotId": {
-          "Ref": "LunchBot",
-        },
-        "BotVersion": {
-          "Fn::GetAtt": [
-            "LunchBotVersion",
-            "BotVersion",
-          ],
-        },
-        "SentimentAnalysisSettings": {
-          "DetectSentiment": true,
-        },
-      },
-      "Type": "AWS::Lex::BotAlias",
-    },
-    "fulfillmentLambdaD5A69AC0": {
+    "LunchfulfillmentLambdaB53264CB": {
       "DependsOn": [
-        "fulfillmentLambdaServiceRoleDefaultPolicyC6D483E7",
-        "fulfillmentLambdaServiceRoleF81C74B1",
+        "LunchfulfillmentLambdaServiceRoleDefaultPolicyA1B832DE",
+        "LunchfulfillmentLambdaServiceRole5FECAB66",
       ],
       "Properties": {
         "Code": {
@@ -488,16 +486,19 @@ exports[`Snapshot 1`] = `
         "Environment": {
           "Variables": {
             "LUNCH_TABLE": {
-              "Ref": "LunchTable7FFF0497",
+              "Ref": "LunchTableFC372FD3",
             },
             "POWERTOOLS_LOG_LEVEL": "DEBUG",
             "SERVICE_NAME": "lunchbot",
+            "STATE_TABLE": {
+              "Ref": "LunchStateTable49BC594E",
+            },
           },
         },
         "Handler": "index.handler",
         "Role": {
           "Fn::GetAtt": [
-            "fulfillmentLambdaServiceRoleF81C74B1",
+            "LunchfulfillmentLambdaServiceRole5FECAB66",
             "Arn",
           ],
         },
@@ -505,12 +506,12 @@ exports[`Snapshot 1`] = `
       },
       "Type": "AWS::Lambda::Function",
     },
-    "fulfillmentLambdaLexInvocationEE9DCE5C": {
+    "LunchfulfillmentLambdaLexInvocationE461C628": {
       "Properties": {
         "Action": "lambda:InvokeFunction",
         "FunctionName": {
           "Fn::GetAtt": [
-            "fulfillmentLambdaD5A69AC0",
+            "LunchfulfillmentLambdaB53264CB",
             "Arn",
           ],
         },
@@ -541,58 +542,7 @@ exports[`Snapshot 1`] = `
       },
       "Type": "AWS::Lambda::Permission",
     },
-    "fulfillmentLambdaServiceRoleDefaultPolicyC6D483E7": {
-      "Properties": {
-        "PolicyDocument": {
-          "Statement": [
-            {
-              "Action": [
-                "dynamodb:BatchGetItem",
-                "dynamodb:GetRecords",
-                "dynamodb:GetShardIterator",
-                "dynamodb:Query",
-                "dynamodb:GetItem",
-                "dynamodb:Scan",
-                "dynamodb:ConditionCheckItem",
-                "dynamodb:DescribeTable",
-              ],
-              "Effect": "Allow",
-              "Resource": [
-                {
-                  "Fn::GetAtt": [
-                    "LunchTable7FFF0497",
-                    "Arn",
-                  ],
-                },
-                {
-                  "Fn::Join": [
-                    "",
-                    [
-                      {
-                        "Fn::GetAtt": [
-                          "LunchTable7FFF0497",
-                          "Arn",
-                        ],
-                      },
-                      "/index/*",
-                    ],
-                  ],
-                },
-              ],
-            },
-          ],
-          "Version": "2012-10-17",
-        },
-        "PolicyName": "fulfillmentLambdaServiceRoleDefaultPolicyC6D483E7",
-        "Roles": [
-          {
-            "Ref": "fulfillmentLambdaServiceRoleF81C74B1",
-          },
-        ],
-      },
-      "Type": "AWS::IAM::Policy",
-    },
-    "fulfillmentLambdaServiceRoleF81C74B1": {
+    "LunchfulfillmentLambdaServiceRole5FECAB66": {
       "Properties": {
         "AssumeRolePolicyDocument": {
           "Statement": [
@@ -622,6 +572,117 @@ exports[`Snapshot 1`] = `
         ],
       },
       "Type": "AWS::IAM::Role",
+    },
+    "LunchfulfillmentLambdaServiceRoleDefaultPolicyA1B832DE": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "dynamodb:BatchGetItem",
+                "dynamodb:GetRecords",
+                "dynamodb:GetShardIterator",
+                "dynamodb:Query",
+                "dynamodb:GetItem",
+                "dynamodb:Scan",
+                "dynamodb:ConditionCheckItem",
+                "dynamodb:BatchWriteItem",
+                "dynamodb:PutItem",
+                "dynamodb:UpdateItem",
+                "dynamodb:DeleteItem",
+                "dynamodb:DescribeTable",
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "LunchStateTable49BC594E",
+                  "Arn",
+                ],
+              },
+            },
+            {
+              "Action": [
+                "dynamodb:BatchGetItem",
+                "dynamodb:GetRecords",
+                "dynamodb:GetShardIterator",
+                "dynamodb:Query",
+                "dynamodb:GetItem",
+                "dynamodb:Scan",
+                "dynamodb:ConditionCheckItem",
+                "dynamodb:DescribeTable",
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "LunchTableFC372FD3",
+                    "Arn",
+                  ],
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "LunchTableFC372FD3",
+                          "Arn",
+                        ],
+                      },
+                      "/index/*",
+                    ],
+                  ],
+                },
+              ],
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "LunchfulfillmentLambdaServiceRoleDefaultPolicyA1B832DE",
+        "Roles": [
+          {
+            "Ref": "LunchfulfillmentLambdaServiceRole5FECAB66",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
+    },
+    "devBotAlias": {
+      "Properties": {
+        "BotAliasLocaleSettings": [
+          {
+            "BotAliasLocaleSetting": {
+              "CodeHookSpecification": {
+                "LambdaCodeHook": {
+                  "CodeHookInterfaceVersion": "1.0",
+                  "LambdaArn": {
+                    "Fn::GetAtt": [
+                      "LunchfulfillmentLambdaB53264CB",
+                      "Arn",
+                    ],
+                  },
+                },
+              },
+              "Enabled": true,
+            },
+            "LocaleId": "en_US",
+          },
+        ],
+        "BotAliasName": "dev",
+        "BotId": {
+          "Ref": "LunchBot",
+        },
+        "BotVersion": {
+          "Fn::GetAtt": [
+            "LunchBotVersion",
+            "BotVersion",
+          ],
+        },
+        "SentimentAnalysisSettings": {
+          "DetectSentiment": true,
+        },
+      },
+      "Type": "AWS::Lex::BotAlias",
     },
   },
   "Rules": {
