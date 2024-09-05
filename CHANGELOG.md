@@ -1,3 +1,10 @@
+## [1.4.1](https://github.com/JussiLem/lunchbot/compare/v1.4.0...v1.4.1) (2024-09-05)
+
+
+### Bug Fixes
+
+* **lunchbot:** added cost allocation tag ([45a6a52](https://github.com/JussiLem/lunchbot/commit/45a6a5285ac9e98bcddbecfb85d0a829e8285e8e))
+
 # [1.4.0](https://github.com/JussiLem/lunchbot/compare/v1.3.0...v1.4.0) (2024-09-05)
 
 
