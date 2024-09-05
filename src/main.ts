@@ -1,6 +1,5 @@
 import {
   App,
-  Aws,
   aws_iam as iam,
   aws_lex as lex,
   Stack,
@@ -113,7 +112,9 @@ export class LunchBotStack extends Stack {
       principal: new iam.ServicePrincipal('lexv2.amazonaws.com'),
       sourceArn: `arn:aws:lex:${Stack.of(this).region}:${Stack.of(this).account}:bot-alias/${lunchBot.attrId}/*`,
     })
-    Tags.of(this).add('AppManagerCFNStackKey', Aws.STACK_NAME)
+    const stack = Stack.of(this)
+    Tags.of(this).add('AppManagerCFNStackKey', stack.stackName)
+    Tags.of(this).add('Environment', 'dev')
     // const eventLambda = new nodejs.NodejsFunction(this, 'events', {
     //   runtime: lambda.Runtime.NODEJS_20_X,
     //   environment: {

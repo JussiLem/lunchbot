@@ -42,9 +42,11 @@ exports[`Snapshot 1`] = `
         "Tags": [
           {
             "Key": "AppManagerCFNStackKey",
-            "Value": {
-              "Ref": "AWS::StackName",
-            },
+            "Value": "test",
+          },
+          {
+            "Key": "Environment",
+            "Value": "dev",
           },
         ],
       },
@@ -514,9 +516,11 @@ exports[`Snapshot 1`] = `
         "Tags": [
           {
             "Key": "AppManagerCFNStackKey",
-            "Value": {
-              "Ref": "AWS::StackName",
-            },
+            "Value": "test",
+          },
+          {
+            "Key": "Environment",
+            "Value": "dev",
           },
         ],
       },
@@ -589,9 +593,11 @@ exports[`Snapshot 1`] = `
         "Tags": [
           {
             "Key": "AppManagerCFNStackKey",
-            "Value": {
-              "Ref": "AWS::StackName",
-            },
+            "Value": "test",
+          },
+          {
+            "Key": "Environment",
+            "Value": "dev",
           },
         ],
       },
