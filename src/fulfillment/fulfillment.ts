@@ -11,10 +11,10 @@ export const handler: LexV2Handler = async (event): Promise<LexV2Result> => {
   logger.debug('Received event', {
     event,
   })
-  const { sessionState, sessionId } = event
+  const { sessionState, sessionId, inputTranscript } = event
   const { sessionAttributes, intent } = sessionState
   const { name: intentName, slots } = intent
-  logger.info('Current intent and slots:', {
+  logger.debug('Current intent and slots', {
     intentName,
     slots,
     sessionId,
@@ -38,6 +38,7 @@ export const handler: LexV2Handler = async (event): Promise<LexV2Result> => {
       ) {
         const result = await processSlots(
           sessionId,
+          inputTranscript,
           suggestLunchSlots,
           intent,
           sessionAttributes,
@@ -46,7 +47,7 @@ export const handler: LexV2Handler = async (event): Promise<LexV2Result> => {
       }
     } catch (e) {
       const error = ensureError(e)
-      logger.error('Error processing slot:', { error })
+      logger.error('Error processing slot', { error })
       return delegate(
         sessionAttributes,
         intent,

@@ -387,8 +387,8 @@ exports[`Snapshot 1`] = `
             "AttributeType": "S",
           },
           {
-            "AttributeName": "intentName",
-            "AttributeType": "S",
+            "AttributeName": "slot",
+            "AttributeType": "N",
           },
         ],
         "BillingMode": "PAY_PER_REQUEST",
@@ -398,7 +398,7 @@ exports[`Snapshot 1`] = `
             "KeyType": "HASH",
           },
           {
-            "AttributeName": "intentName",
+            "AttributeName": "slot",
             "KeyType": "RANGE",
           },
         ],

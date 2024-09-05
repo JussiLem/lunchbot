@@ -12,6 +12,7 @@ export class Lunch extends Construct {
 
   constructor(scope: Readonly<Construct>, id: string) {
     super(scope, id)
+
     const lunchTable = new dynamodb.TableV2(this, 'Table', {
       partitionKey: {
         type: dynamodb.AttributeType.STRING,
@@ -39,8 +40,8 @@ export class Lunch extends Construct {
         name: 'id',
       },
       sortKey: {
-        type: AttributeType.STRING,
-        name: 'intentName',
+        type: AttributeType.NUMBER,
+        name: 'slot',
       },
       removalPolicy: RemovalPolicy.DESTROY,
     })
