@@ -1,9 +1,11 @@
 import {
   App,
+  Aws,
   aws_iam as iam,
   aws_lex as lex,
   Stack,
   StackProps,
+  Tags,
 } from 'aws-cdk-lib'
 import { Construct } from 'constructs'
 import { botLocales } from './botLocales'
@@ -111,6 +113,7 @@ export class LunchBotStack extends Stack {
       principal: new iam.ServicePrincipal('lexv2.amazonaws.com'),
       sourceArn: `arn:aws:lex:${Stack.of(this).region}:${Stack.of(this).account}:bot-alias/${lunchBot.attrId}/*`,
     })
+    Tags.of(this).add('AppManagerCFNStackKey', Aws.STACK_NAME)
     // const eventLambda = new nodejs.NodejsFunction(this, 'events', {
     //   runtime: lambda.Runtime.NODEJS_20_X,
     //   environment: {

@@ -39,6 +39,14 @@ exports[`Snapshot 1`] = `
             "PolicyName": "LexRuntimeRolePolicy",
           },
         ],
+        "Tags": [
+          {
+            "Key": "AppManagerCFNStackKey",
+            "Value": {
+              "Ref": "AWS::StackName",
+            },
+          },
+        ],
       },
       "Type": "AWS::IAM::Role",
     },
@@ -503,6 +511,14 @@ exports[`Snapshot 1`] = `
           ],
         },
         "Runtime": "nodejs20.x",
+        "Tags": [
+          {
+            "Key": "AppManagerCFNStackKey",
+            "Value": {
+              "Ref": "AWS::StackName",
+            },
+          },
+        ],
       },
       "Type": "AWS::Lambda::Function",
     },
@@ -568,6 +584,14 @@ exports[`Snapshot 1`] = `
                 ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
               ],
             ],
+          },
+        ],
+        "Tags": [
+          {
+            "Key": "AppManagerCFNStackKey",
+            "Value": {
+              "Ref": "AWS::StackName",
+            },
           },
         ],
       },
