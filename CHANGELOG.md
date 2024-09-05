@@ -1,3 +1,10 @@
+## [1.4.2](https://github.com/JussiLem/lunchbot/compare/v1.4.1...v1.4.2) (2024-09-05)
+
+
+### Bug Fixes
+
+* **lunchbot:** fixed tag creation ([f0de967](https://github.com/JussiLem/lunchbot/commit/f0de9679915f401c89a3a14e220a5d323153510c))
+
 ## [1.4.1](https://github.com/JussiLem/lunchbot/compare/v1.4.0...v1.4.1) (2024-09-05)
 
 
