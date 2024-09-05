@@ -1,3 +1,15 @@
+# [1.4.0](https://github.com/JussiLem/lunchbot/compare/v1.3.0...v1.4.0) (2024-09-05)
+
+
+### Bug Fixes
+
+* **lunchbot:** adjusted state storing to dynamodb ([0c68e65](https://github.com/JussiLem/lunchbot/commit/0c68e65a4e6f38b0c55d124eac61ef6629ed10b1))
+
+
+### Features
+
+* **lunchbot:** added table for storing the state of the conversation ([20cf95e](https://github.com/JussiLem/lunchbot/commit/20cf95eb028ebf20f6cf9f9f3fb38c11f6c7da80))
+
 # [1.3.0](https://github.com/JussiLem/lunchbot/compare/v1.2.0...v1.3.0) (2024-08-20)
 
 
