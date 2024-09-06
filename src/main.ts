@@ -17,6 +17,7 @@ export class LunchBotStack extends Stack {
     props: Readonly<StackProps> = {},
   ) {
     super(scope, id, props)
+    const stack = Stack.of(this)
     const lexBotRole = new iam.Role(this, 'LexBotRole', {
       assumedBy: new iam.ServicePrincipal('lexv2.amazonaws.com'),
       inlinePolicies: {
@@ -59,6 +60,16 @@ export class LunchBotStack extends Stack {
       roleArn: lexBotRole.roleArn,
       autoBuildBotLocales: true,
       botLocales,
+      botTags: [
+        {
+          key: 'AppManagerCFNStackKey',
+          value: stack.stackName,
+        },
+        {
+          key: 'Environment',
+          value: 'dev',
+        },
+      ],
       testBotAliasSettings: {
         botAliasLocaleSettings: [
           {
@@ -112,7 +123,6 @@ export class LunchBotStack extends Stack {
       principal: new iam.ServicePrincipal('lexv2.amazonaws.com'),
       sourceArn: `arn:aws:lex:${Stack.of(this).region}:${Stack.of(this).account}:bot-alias/${lunchBot.attrId}/*`,
     })
-    const stack = Stack.of(this)
     Tags.of(this).add('AppManagerCFNStackKey', stack.stackName)
     Tags.of(this).add('Environment', 'dev')
     // const eventLambda = new nodejs.NodejsFunction(this, 'events', {

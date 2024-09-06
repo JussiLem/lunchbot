@@ -337,6 +337,16 @@ exports[`Snapshot 1`] = `
             ],
           },
         ],
+        "BotTags": [
+          {
+            "Key": "AppManagerCFNStackKey",
+            "Value": "test",
+          },
+          {
+            "Key": "Environment",
+            "Value": "dev",
+          },
+        ],
         "DataPrivacy": {
           "ChildDirected": true,
         },
