@@ -1,3 +1,11 @@
+## [1.4.3](https://github.com/JussiLem/lunchbot/compare/v1.4.2...v1.4.3) (2024-09-06)
+
+
+### Bug Fixes
+
+* **chatbot:** simplified logic ([f08b519](https://github.com/JussiLem/lunchbot/commit/f08b51916e491efabaef499d373fc65ebccc7d0d))
+* **lunchbot:** added tags to lex ([9328bce](https://github.com/JussiLem/lunchbot/commit/9328bceec99c0715617882459328dbe03049b331))
+
 ## [1.4.2](https://github.com/JussiLem/lunchbot/compare/v1.4.1...v1.4.2) (2024-09-05)
 
 
