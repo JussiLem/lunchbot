@@ -9,7 +9,7 @@ const stateTableName = process.env.STATE_TABLE!
 interface LunchState {
   sessionId: string
   slot: CustomSlot
-  slotValue: string
+  slotValue: { [key: string]: string }
 }
 
 /**
@@ -18,18 +18,29 @@ interface LunchState {
  * @param sessionId
  * @param intentName
  * @param slotValue
+ * @example
+ * // Example usage with a dynamic slotValue key
+ * const sessionId = 'session123';
+ * const slot = { name: 'lunchSlot', type: 'type1' };
+ * const slotValue = { myDynamicKey: 'myDynamicValue' };
+ * await storeState({
+ * sessionId,
+ * slot,
+ * slotValue
+ * });
  */
 export const storeState = async ({
   sessionId,
   slot,
   slotValue,
 }: LunchState): Promise<void | null> => {
+  const [key, value] = Object.entries(slotValue)[0]
   const input: PutCommandInput = {
     TableName: stateTableName,
     Item: {
       id: sessionId,
       slot: slot,
-      slotValue: slotValue,
+      [key]: value,
     },
     ConditionExpression:
       'attribute_not_exists(id) AND attribute_not_exists(intentName)',

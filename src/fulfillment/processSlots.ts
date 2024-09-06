@@ -49,7 +49,6 @@ const createLexMessages = (
 
 type NextSlotHandler = (
   sessionId: string,
-  inputTranscript: string,
   slots: SuggestLunchSlots,
   intent: LexV2Intent,
   sessionAttributes: Record<string, string> | undefined,
@@ -117,41 +116,6 @@ const createCloseAction = (
   }
 }
 
-const handleCuisineType: SlotHandler = async (
-  sessionId: string,
-  inputTranscript: string,
-  slotKey: string,
-  slotValue: LexV2ScalarSlotValue,
-  intent: LexV2Intent,
-  sessionAttributes: Record<string, string> | undefined,
-): Promise<LexV2Result> => {
-  const slot = CustomSlot[slotKey as keyof typeof CustomSlot]
-  const cuisineType = slotValue.value.interpretedValue
-  logger.info('CuisineType detected', {
-    slot,
-    slotKey,
-    cuisineType,
-    inputTranscript,
-  })
-
-  if (!cuisineType) {
-    throw new Error('Cuisine type is missing')
-  }
-
-  const state = await storeState({
-    sessionId,
-    slot,
-    slotValue: cuisineType,
-  })
-
-  if (state == null) {
-    logger.debug('CuisineType already exists, proceeding to next step')
-    return createCloseAction(sessionAttributes, intent, [])
-  }
-
-  return createCloseAction(sessionAttributes, intent, [])
-}
-
 const createErrorResponse = (
   sessionAttributes: Record<string, string> | undefined,
   intent: LexV2Intent,
@@ -169,10 +133,53 @@ const createErrorResponse = (
   )
 }
 
+const validateLunchType = async (
+  sessionId: string,
+  slot: CustomSlot,
+  intent: LexV2Intent,
+  cuisineType: string | undefined,
+  sessionAttributes: Record<string, string> | undefined,
+) => {
+  if (!cuisineType) {
+    throw new Error('Cuisine type is missing')
+  }
+
+  const state = await storeState({
+    sessionId,
+    slot,
+    slotValue: { cuisineType },
+  })
+
+  if (state == null) {
+    logger.debug('CuisineType already exists, proceeding to next step')
+    return createCloseAction(sessionAttributes, intent, [])
+  }
+  return cuisineType
+}
+
+const getLunchOptions: SlotHandler = async (
+  sessionId: string,
+  slotKey: string,
+  slotValue: LexV2ScalarSlotValue,
+  intent: LexV2Intent,
+  sessionAttributes: Record<string, string> | undefined,
+): Promise<LexV2Result> => {
+  const slot = CustomSlot[slotKey as keyof typeof CustomSlot]
+  const cuisineType = slotValue.value.interpretedValue
+  await validateLunchType(
+    sessionId,
+    slot,
+    intent,
+    cuisineType,
+    sessionAttributes,
+  )
+
+  return createCloseAction(sessionAttributes, intent, [])
+}
+
 type SlotHandler = (
   sessionId: string,
   slotKey: string,
-  inputTranscript: string,
   slotValue: LexV2ScalarSlotValue,
   intent: LexV2Intent,
   sessionAttributes: Record<string, string> | undefined,
@@ -180,7 +187,6 @@ type SlotHandler = (
 
 export const processSlots: NextSlotHandler = async (
   sessionId: string,
-  inputTranscript: string,
   slots: SuggestLunchSlots,
   intent: LexV2Intent,
   sessionAttributes: Record<string, string> | undefined,
@@ -201,11 +207,10 @@ export const processSlots: NextSlotHandler = async (
       await storeState({
         sessionId,
         slot: CustomSlot.CuisineType,
-        slotValue: cuisineType,
+        slotValue: { cuisineType },
       })
-      return handleCuisineType(
+      return getLunchOptions(
         sessionId,
-        inputTranscript,
         slotKey,
         nextSlotValue,
         intent,
@@ -222,7 +227,7 @@ export const processSlots: NextSlotHandler = async (
       await storeState({
         sessionId,
         slot: CustomSlot.OfficeLocation,
-        slotValue: officeLocation,
+        slotValue: { officeLocation },
       })
 
       // if office location was given and
