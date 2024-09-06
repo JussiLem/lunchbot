@@ -20,46 +20,8 @@ export const handler: LexV2Handler = async (event): Promise<LexV2Result> => {
     sessionId,
   })
 
-  if (slots) {
-    try {
-      const suggestLunchSlots: SuggestLunchSlots = {
-        OfficeLocation: isSlotValue(slots.OfficeLocation)
-          ? slots.OfficeLocation
-          : null,
-        CuisineType: isSlotValue(slots.CuisineType) ? slots.CuisineType : null,
-        DietaryRestrictions: isSlotValue(slots.DietaryRestrictions)
-          ? slots.DietaryRestrictions
-          : null,
-        Budget: isSlotValue(slots.Budget) ? slots.Budget : null,
-      }
-      if (
-        suggestLunchSlots.OfficeLocation &&
-        isSlotValue(suggestLunchSlots.OfficeLocation)
-      ) {
-        const result = await processSlots(
-          sessionId,
-          inputTranscript,
-          suggestLunchSlots,
-          intent,
-          sessionAttributes,
-        )
-        return result
-      }
-    } catch (e) {
-      const error = ensureError(e)
-      logger.error('Error processing slot', { error })
-      return delegate(
-        sessionAttributes,
-        intent,
-        [
-          {
-            contentType: 'PlainText',
-            content: 'An error occurred while processing your request.',
-          } as LexV2ContentMessage,
-        ],
-        'Close',
-      )
-    }
+  if (!slots) {
+    logger.error('Missing slots in the input data')
     return delegate(
       sessionAttributes,
       intent,
@@ -72,17 +34,38 @@ export const handler: LexV2Handler = async (event): Promise<LexV2Result> => {
       'Close',
     )
   }
-  logger.error('Missing slots in the input data')
-
-  return delegate(
-    sessionAttributes,
-    intent,
-    [
-      {
-        contentType: 'PlainText',
-        content: 'An error occurred while processing your request.',
-      } as LexV2ContentMessage,
-    ],
-    'Close',
-  )
+  try {
+    const suggestLunchSlots: SuggestLunchSlots = {
+      OfficeLocation: isSlotValue(slots.OfficeLocation)
+        ? slots.OfficeLocation
+        : null,
+      CuisineType: isSlotValue(slots.CuisineType) ? slots.CuisineType : null,
+      DietaryRestrictions: isSlotValue(slots.DietaryRestrictions)
+        ? slots.DietaryRestrictions
+        : null,
+      Budget: isSlotValue(slots.Budget) ? slots.Budget : null,
+    }
+    const result = await processSlots(
+      sessionId,
+      inputTranscript,
+      suggestLunchSlots,
+      intent,
+      sessionAttributes,
+    )
+    return result
+  } catch (e) {
+    const error = ensureError(e)
+    logger.error('Error processing slot', { error })
+    return delegate(
+      sessionAttributes,
+      intent,
+      [
+        {
+          contentType: 'PlainText',
+          content: 'An error occurred while processing your request.',
+        } as LexV2ContentMessage,
+      ],
+      'Close',
+    )
+  }
 }

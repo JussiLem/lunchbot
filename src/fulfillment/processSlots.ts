@@ -117,83 +117,6 @@ const createCloseAction = (
   }
 }
 
-/**
- * Handles the OfficeLocation slot in a LexV2 intent.
- * Then it handles the CuisineType.
- * @param {string} sessionId - The unique identifier for the session.
- * @param {string} inputTranscript - The user's input.
- * @param {string} slotKey - The key of the current slot.
- * @param {LexV2ScalarSlotValue} slotValue - The value of the current slot.
- * @param {LexV2Intent} intent - The intent object.
- * @param {Record<string, string> | undefined} sessionAttributes - The session attributes.
- * @returns {Promise<LexV2Result | null>} The result of handling the OfficeLocation slot.
- * @throws {Error} If the office location is missing.
- * @throws {Error} If the cuisine type is missing.
- */
-const handleOfficeLocation: SlotHandler = async (
-  sessionId: string,
-  inputTranscript: string,
-  slotKey: string,
-  slotValue: LexV2ScalarSlotValue,
-  intent: LexV2Intent,
-  sessionAttributes: Record<string, string> | undefined,
-): Promise<LexV2Result | null> => {
-  const slot = CustomSlot[slotKey as keyof typeof CustomSlot]
-  logger.debug(`Slot type detected`, { slotKey, slot })
-  // Fetch the CuisineType from slots
-  const nextSlotValue = intent.slots?.CuisineType
-  if (nextSlotValue && isSlotValue(nextSlotValue)) {
-    const cuisineType = nextSlotValue.value.interpretedValue
-    if (!cuisineType) {
-      throw new Error('Cuisine type missing')
-    }
-    await storeState({
-      sessionId,
-      slot: CustomSlot.CuisineType,
-      slotValue: cuisineType,
-    })
-    return handleCuisineType(
-      sessionId,
-      inputTranscript,
-      slotKey,
-      nextSlotValue,
-      intent,
-      sessionAttributes,
-    )
-  }
-  const officeSlotValue = intent.slots?.OfficeLocation
-  if (officeSlotValue) {
-    const officeLocation = slotValue.value.interpretedValue
-
-    if (!officeLocation) {
-      throw new Error('Office location missing')
-    }
-    await storeState({
-      sessionId,
-      slot: CustomSlot.OfficeLocation,
-      slotValue: officeLocation,
-    })
-
-    // if office location was given and
-    // new state was stored we'll fetch possible cuisine types from dynamoDb
-    const supportedCuisineTypes =
-      await getCuisineTypesForOfficeLocation(officeLocation)
-    logger.info('Found cuisineTypes', { supportedCuisineTypes })
-
-    const messages = createLexMessages(officeLocation, supportedCuisineTypes)
-    if (supportedCuisineTypes.length) {
-      return createElicitSlotAction(
-        'CuisineType',
-        sessionAttributes,
-        intent,
-        messages,
-      )
-    }
-  }
-
-  return createCloseAction(sessionAttributes, intent, [])
-}
-
 const handleCuisineType: SlotHandler = async (
   sessionId: string,
   inputTranscript: string,
@@ -229,6 +152,23 @@ const handleCuisineType: SlotHandler = async (
   return createCloseAction(sessionAttributes, intent, [])
 }
 
+const createErrorResponse = (
+  sessionAttributes: Record<string, string> | undefined,
+  intent: LexV2Intent,
+): LexV2Result => {
+  return delegate(
+    sessionAttributes,
+    intent,
+    [
+      {
+        contentType: 'PlainText',
+        content: 'An error occurred while processing your request.',
+      } as LexV2ContentMessage,
+    ],
+    'Close',
+  )
+}
+
 type SlotHandler = (
   sessionId: string,
   slotKey: string,
@@ -236,7 +176,7 @@ type SlotHandler = (
   slotValue: LexV2ScalarSlotValue,
   intent: LexV2Intent,
   sessionAttributes: Record<string, string> | undefined,
-) => Promise<LexV2Result | null>
+) => Promise<LexV2Result>
 
 export const processSlots: NextSlotHandler = async (
   sessionId: string,
@@ -245,41 +185,66 @@ export const processSlots: NextSlotHandler = async (
   intent: LexV2Intent,
   sessionAttributes: Record<string, string> | undefined,
 ): Promise<LexV2Result> => {
-  const slotHandlers: Partial<Record<keyof SuggestLunchSlots, SlotHandler>> = {
-    OfficeLocation: handleOfficeLocation,
-    CuisineType: handleCuisineType,
-    // Add other handlers here if needed
+  const { OfficeLocation } = slots
+
+  if (OfficeLocation && isSlotValue(OfficeLocation)) {
+    const slotKey = 'OfficeLocation'
+    const slot = CustomSlot[slotKey as keyof typeof CustomSlot]
+    logger.debug(`Slot type detected`, { slotKey, slot })
+    // Fetch the CuisineType from slots
+    const nextSlotValue = intent.slots?.CuisineType
+    if (nextSlotValue && isSlotValue(nextSlotValue)) {
+      const cuisineType = nextSlotValue.value.interpretedValue
+      if (!cuisineType) {
+        throw new Error('Cuisine type missing')
+      }
+      await storeState({
+        sessionId,
+        slot: CustomSlot.CuisineType,
+        slotValue: cuisineType,
+      })
+      return handleCuisineType(
+        sessionId,
+        inputTranscript,
+        slotKey,
+        nextSlotValue,
+        intent,
+        sessionAttributes,
+      )
+    }
+    const officeSlotValue = intent.slots?.OfficeLocation
+    if (officeSlotValue) {
+      const officeLocation = OfficeLocation.value.interpretedValue
+
+      if (!officeLocation) {
+        throw new Error('Office location missing')
+      }
+      await storeState({
+        sessionId,
+        slot: CustomSlot.OfficeLocation,
+        slotValue: officeLocation,
+      })
+
+      // if office location was given and
+      // new state was stored we'll fetch possible cuisine types from dynamoDb
+      const supportedCuisineTypes =
+        await getCuisineTypesForOfficeLocation(officeLocation)
+      logger.debug('Found cuisineTypes', { supportedCuisineTypes })
+
+      const messages = createLexMessages(officeLocation, supportedCuisineTypes)
+      if (supportedCuisineTypes.length) {
+        return createElicitSlotAction(
+          'CuisineType',
+          sessionAttributes,
+          intent,
+          messages,
+        )
+      }
+    }
+
+    return createCloseAction(sessionAttributes, intent, [])
   }
 
-  // Use reduce to process each slot and handle them accordingly
-  const finalResult = await Object.entries(slots).reduce(
-    async (prevPromise, [slotKey, slotValue]) => {
-      const previousResult = await prevPromise
-      if (previousResult) {
-        return previousResult // Exit early if we already have a valid result
-      }
-
-      if (slotValue && isSlotValue(slotValue)) {
-        const handler = slotHandlers[slotKey as keyof SuggestLunchSlots]
-        if (handler) {
-          const handlerResult = await handler(
-            sessionId,
-            inputTranscript,
-            slotKey,
-            slotValue,
-            intent,
-            sessionAttributes,
-          )
-          if (handlerResult) {
-            return handlerResult // Return the first valid result found
-          }
-        }
-      }
-      return null
-    },
-    Promise.resolve<LexV2Result | null>(null), // Initial value for reduce
-  )
-
-  // If no specific handler returned a valid result, delegate the action
-  return finalResult ?? delegate(sessionAttributes, intent)
+  logger.error('OfficeLocation slot is missing or invalid')
+  return createErrorResponse(sessionAttributes, intent)
 }
