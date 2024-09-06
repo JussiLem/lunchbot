@@ -408,7 +408,7 @@ exports[`Snapshot 1`] = `
           },
           {
             "AttributeName": "slot",
-            "AttributeType": "N",
+            "AttributeType": "S",
           },
         ],
         "BillingMode": "PAY_PER_REQUEST",

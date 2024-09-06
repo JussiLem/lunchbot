@@ -34,15 +34,16 @@ export class Lunch extends Construct {
         },
       ],
     })
-    const stateTable = new dynamodb.TableV2(this, 'StateTable', {
+    const stateTable = new dynamodb.TableV2(this, 'State', {
       partitionKey: {
         type: dynamodb.AttributeType.STRING,
         name: 'id',
       },
       sortKey: {
-        type: AttributeType.NUMBER,
+        type: AttributeType.STRING,
         name: 'slot',
       },
+      deletionProtection: false,
       removalPolicy: RemovalPolicy.DESTROY,
     })
     this.fulfillmentLambda = new nodejs.NodejsFunction(

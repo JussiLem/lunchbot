@@ -1,6 +1,6 @@
 export enum CustomSlot {
-  OfficeLocation,
-  CuisineType,
-  DietaryRestrictions,
-  Budget,
+  OfficeLocation = 'OfficeLocation',
+  CuisineType = 'CuisineType',
+  DietaryRestrictions = 'DietaryRestrictions',
+  Budget = 'Budget',
 }
