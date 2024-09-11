@@ -1,3 +1,10 @@
+## [1.5.1](https://github.com/JussiLem/lunchbot/compare/v1.5.0...v1.5.1) (2024-09-11)
+
+
+### Bug Fixes
+
+* **lunchbot:** update projen and dependencies to fix permission issues ([5672d5f](https://github.com/JussiLem/lunchbot/commit/5672d5f81a968ec92c0f2565ef67da8ff6d13cf3))
+
 # [1.5.0](https://github.com/JussiLem/lunchbot/compare/v1.4.3...v1.5.0) (2024-09-11)
 
 
