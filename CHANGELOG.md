@@ -1,3 +1,10 @@
+## [1.5.3](https://github.com/JussiLem/lunchbot/compare/v1.5.2...v1.5.3) (2024-09-11)
+
+
+### Bug Fixes
+
+* **lunchbot:** added table for storing restaurants and visits into them ([1407c26](https://github.com/JussiLem/lunchbot/commit/1407c26c0aeae5bb246ef5db690e74998ad9a8cd))
+
 ## [1.5.2](https://github.com/JussiLem/lunchbot/compare/v1.5.1...v1.5.2) (2024-09-11)
 
 
