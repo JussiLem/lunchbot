@@ -1,3 +1,10 @@
+## [1.5.2](https://github.com/JussiLem/lunchbot/compare/v1.5.1...v1.5.2) (2024-09-11)
+
+
+### Bug Fixes
+
+* **lunchbot:** added expiration date for state table to keep the table smaller ([12f5e0a](https://github.com/JussiLem/lunchbot/commit/12f5e0abce3b391c83a269125902d687d9d6ffe7))
+
 ## [1.5.1](https://github.com/JussiLem/lunchbot/compare/v1.5.0...v1.5.1) (2024-09-11)
 
 
