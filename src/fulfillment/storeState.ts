@@ -34,6 +34,7 @@ export const storeState = async ({
   sessionId,
   slot,
   slotValue,
+  expireAt,
 }: LunchState): Promise<void | null> => {
   const [key, value] = Object.entries(slotValue)[0]
   const input: PutCommandInput = {
@@ -42,6 +43,7 @@ export const storeState = async ({
       id: sessionId,
       slot: slot,
       [key]: value,
+      expireAt,
     },
     ConditionExpression:
       'attribute_not_exists(id) AND attribute_not_exists(intentName)',
