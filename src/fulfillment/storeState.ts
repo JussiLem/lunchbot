@@ -1,33 +1,28 @@
 import { PutCommand, PutCommandInput } from '@aws-sdk/lib-dynamodb'
-import { CustomSlot } from './customSlot'
 import { dbClient } from '../common/dbClient'
 import { logger } from '../common/powertools'
 import { ensureError } from '../ensureError'
+import { LunchState } from './lunchState'
 
 const stateTableName = process.env.STATE_TABLE!
-
-interface LunchState {
-  sessionId: string
-  slot: CustomSlot
-  slotValue: { [key: string]: string }
-  expireAt: number
-}
 
 /**
  * If the item already exists (i.e., an item with the same id and intentName)
  * @return null
  * @param sessionId
- * @param intentName
+ * @param slot
  * @param slotValue
+ * @param expireAt
  * @example
- * // Example usage with a dynamic slotValue key
+ * // Example usage with multiple slotValues
  * const sessionId = 'session123';
- * const slot = { name: 'lunchSlot', type: 'type1' };
- * const slotValue = { myDynamicKey: 'myDynamicValue' };
+ * const slot = CustomSlot.LunchSlot;
+ * const slotValue = { restaurant: 'Place1', officeLocation: 'Location1' };
  * await storeState({
  * sessionId,
  * slot,
- * slotValue
+ * slotValue,
+ * expireAt: Math.floor(Date.now() / 1000) + ONE_WEEK_IN_SECONDS
  * });
  */
 export const storeState = async ({
@@ -36,19 +31,23 @@ export const storeState = async ({
   slotValue,
   expireAt,
 }: LunchState): Promise<void | null> => {
-  const [key, value] = Object.entries(slotValue)[0]
+  // Using object spread to build the item
+  const item: PutCommandInput['Item'] = {
+    id: sessionId,
+    slot,
+    expireAt,
+    ...slotValue,
+  }
+
   const input: PutCommandInput = {
     TableName: stateTableName,
-    Item: {
-      id: sessionId,
-      slot: slot,
-      [key]: value,
-      expireAt,
-    },
+    Item: item,
     ConditionExpression:
-      'attribute_not_exists(id) AND attribute_not_exists(intentName)',
+      'attribute_not_exists(id) AND attribute_not_exists(slot)',
   }
+
   logger.debug('Updating state', { input })
+
   try {
     await dbClient.send(new PutCommand(input))
     return // Return if the new item was created successfully

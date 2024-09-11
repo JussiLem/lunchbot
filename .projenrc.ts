@@ -19,6 +19,7 @@ const project = new awscdk.AwsCdkTypeScriptApp({
   },
   projenrcTs: true,
   deps: [
+    '@types/aws-lambda',
     '@aws-lambda-powertools/logger',
     '@aws-lambda-powertools/metrics',
     '@aws-lambda-powertools/tracer',
@@ -26,10 +27,10 @@ const project = new awscdk.AwsCdkTypeScriptApp({
     '@aws-sdk/client-lex-runtime-v2',
     '@aws-sdk/client-dynamodb',
     '@aws-sdk/lib-dynamodb',
+    '@aws-sdk/util-dynamodb',
   ],
   devDeps: [
     'eslint-plugin-functional@6.6.3',
-    '@types/aws-lambda',
     'commitizen',
     'cz-conventional-changelog',
     'semantic-release',

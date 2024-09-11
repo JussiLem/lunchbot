@@ -231,7 +231,10 @@ export const processSlots: NextSlotHandler = async (
       await storeState({
         sessionId,
         slot: CustomSlot.Restaurants,
-        slotValue: { restaurant: extractedRestaurant },
+        slotValue: {
+          restaurant: extractedRestaurant,
+          officeLocation: officeLocation,
+        },
         expireAt: Math.floor(Date.now() / 1000) + ONE_WEEK_IN_SECONDS,
       })
       return createCloseAction(sessionAttributes, intent, [

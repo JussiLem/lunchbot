@@ -1,14 +1,14 @@
 import {
-  aws_glue as glue,
-  aws_dynamodb as dynamodb,
-  aws_lambda as lambda,
-  aws_lambda_nodejs as nodejs,
-  aws_iam as iam,
-  RemovalPolicy,
   Aws,
-  // Aws,
+  aws_dynamodb as dynamodb,
+  aws_glue as glue,
+  aws_iam as iam,
+  aws_lambda as lambda,
+  aws_lambda_event_sources as event_sources,
+  aws_lambda_nodejs as nodejs,
+  aws_logs as logs,
+  RemovalPolicy,
 } from 'aws-cdk-lib'
-import { AttributeType } from 'aws-cdk-lib/aws-dynamodb'
 import { Construct } from 'constructs'
 
 export class Lunch extends Construct {
@@ -44,12 +44,13 @@ export class Lunch extends Construct {
         name: 'id',
       },
       sortKey: {
-        type: AttributeType.STRING,
+        type: dynamodb.AttributeType.STRING,
         name: 'slot',
       },
       deletionProtection: false,
       timeToLiveAttribute: 'expireAt',
       removalPolicy: RemovalPolicy.DESTROY,
+      dynamoStream: dynamodb.StreamViewType.NEW_IMAGE,
     })
     const crawlerRole = new iam.Role(this, 'CrawlerRole', {
       assumedBy: new iam.ServicePrincipal('glue.amazonaws.com'),
@@ -116,6 +117,34 @@ export class Lunch extends Construct {
         entry: 'src/fulfillment/fulfillment.ts',
       },
     )
+    const restaurantTable = new dynamodb.TableV2(this, 'Restaurant', {
+      partitionKey: {
+        type: dynamodb.AttributeType.STRING,
+        name: 'restaurant',
+      },
+      sortKey: {
+        type: dynamodb.AttributeType.STRING,
+        name: 'officeLocation',
+      },
+      removalPolicy: RemovalPolicy.DESTROY,
+    })
+    const streamLambda = new nodejs.NodejsFunction(this, 'streamLambda', {
+      runtime: lambda.Runtime.NODEJS_20_X,
+      logRetention: logs.RetentionDays.ONE_MONTH,
+      environment: {
+        SERVICE_NAME: 'lunchbot',
+        POWERTOOLS_LOG_LEVEL: 'ERROR',
+        RESTAURANT_TABLE: restaurantTable.tableName,
+      },
+      entry: 'src/fulfillment/lunch-stream.ts',
+    })
+    streamLambda.addEventSource(
+      new event_sources.DynamoEventSource(stateTable, {
+        startingPosition: lambda.StartingPosition.TRIM_HORIZON,
+      }),
+    )
+    restaurantTable.grantReadWriteData(streamLambda)
+    stateTable.grantStreamRead(streamLambda)
     stateTable.grantReadWriteData(this.fulfillmentLambda)
     lunchTable.grantReadData(this.fulfillmentLambda)
   }
