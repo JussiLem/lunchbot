@@ -8,8 +8,11 @@ import {
   LexV2ScalarSlotValue,
 } from 'aws-lambda/trigger/lex-v2'
 import { CustomSlot } from './customSlot'
-import { getCuisineTypesForOfficeLocation } from './getCuisineTypesForOfficeLocation'
-import { isSlotValue } from './isSlotValue'
+import {
+  getCuisineTypesForOfficeLocation,
+  getRestaurantsByCuisineType,
+  Restaurant,
+} from './getCuisineTypesForOfficeLocation'
 import { storeState } from './storeState'
 import { logger } from '../common/powertools'
 
@@ -18,9 +21,10 @@ export interface SuggestLunchSlots {
   CuisineType: LexV2ScalarSlotValue | null
   DietaryRestrictions: LexV2ScalarSlotValue | null
   Budget: LexV2ScalarSlotValue | null
+  Restaurants: LexV2ScalarSlotValue | null
 }
 
-const createLexMessages = (
+const createCuisineTypeCards = (
   officeLocation: string,
   supportedLunchTypes: string[],
 ): LexV2Message[] => {
@@ -49,6 +53,7 @@ const createLexMessages = (
 
 type NextSlotHandler = (
   sessionId: string,
+  inputTranscript: string,
   slots: SuggestLunchSlots,
   intent: LexV2Intent,
   sessionAttributes: Record<string, string> | undefined,
@@ -133,118 +138,161 @@ const createErrorResponse = (
   )
 }
 
-const validateLunchType = async (
-  sessionId: string,
-  slot: CustomSlot,
-  intent: LexV2Intent,
-  cuisineType: string | undefined,
-  sessionAttributes: Record<string, string> | undefined,
+const getPreviousRestaurants = async (
+  officeLocation: string,
+  lunchType: string,
 ) => {
-  if (!cuisineType) {
-    throw new Error('Cuisine type is missing')
-  }
-
-  const state = await storeState({
-    sessionId,
-    slot,
-    slotValue: { cuisineType },
+  logger.debug('Searching for previous lunch places', {
+    officeLocation,
+    lunchType,
   })
+  return getRestaurantsByCuisineType(officeLocation, lunchType)
+}
 
-  if (state == null) {
-    logger.debug('CuisineType already exists, proceeding to next step')
-    return createCloseAction(sessionAttributes, intent, [])
+const createRestaurantCards = (
+  officeLocation: string,
+  restaurants: Restaurant[],
+): LexV2Message[] => {
+  if (restaurants.length === 0) {
+    return [
+      {
+        contentType: 'PlainText',
+        content: `no restaurants found for ${officeLocation}`,
+      } as LexV2ContentMessage,
+    ]
   }
-  return cuisineType
-}
 
-const getLunchOptions: SlotHandler = async (
-  sessionId: string,
-  slotKey: string,
-  slotValue: LexV2ScalarSlotValue,
-  intent: LexV2Intent,
-  sessionAttributes: Record<string, string> | undefined,
-): Promise<LexV2Result> => {
-  const slot = CustomSlot[slotKey as keyof typeof CustomSlot]
-  const cuisineType = slotValue.value.interpretedValue
-  await validateLunchType(
-    sessionId,
-    slot,
-    intent,
-    cuisineType,
-    sessionAttributes,
+  return restaurants.map(
+    (restaurant) =>
+      ({
+        contentType: 'ImageResponseCard',
+        imageResponseCard: {
+          title: restaurant.name,
+          subtitle: `Rating: ${restaurant.rating}/5 | Visits: ${restaurant.visits}`,
+          buttons: [
+            {
+              text: 'Select this restaurant',
+              value: `${restaurant.name} was chosen`,
+            },
+          ],
+        } as LexV2ImageResponseCard,
+      }) as LexV2ImageResponseCardMessage,
   )
-
-  return createCloseAction(sessionAttributes, intent, [])
+}
+const getLunchOptions = async (
+  officeLocation: string,
+  cuisineType: string,
+): Promise<LexV2Message[]> => {
+  const restaurants = await getPreviousRestaurants(officeLocation, cuisineType)
+  logger.debug('Received restaurants', {
+    restaurants,
+  })
+  const messages = createRestaurantCards(officeLocation, restaurants)
+  return messages
 }
 
-type SlotHandler = (
-  sessionId: string,
-  slotKey: string,
-  slotValue: LexV2ScalarSlotValue,
-  intent: LexV2Intent,
-  sessionAttributes: Record<string, string> | undefined,
-) => Promise<LexV2Result>
+const ONE_WEEK_IN_SECONDS = 7 * 24 * 60 * 60 // 7 days in seconds
 
+const extractRestaurantFromTranscript = (transcript: string): string | null => {
+  // Implement logic to extract restaurant, e.g. regex match or pattern processing
+  const match = /([A-Za-z\s]+) was chosen/.exec(transcript)
+  return match ? match[1] : null
+}
 export const processSlots: NextSlotHandler = async (
   sessionId: string,
+  inputTranscript: string,
   slots: SuggestLunchSlots,
   intent: LexV2Intent,
   sessionAttributes: Record<string, string> | undefined,
 ): Promise<LexV2Result> => {
-  const { OfficeLocation } = slots
-
-  if (OfficeLocation && isSlotValue(OfficeLocation)) {
+  const { OfficeLocation, CuisineType, Restaurants } = slots
+  if (OfficeLocation) {
+    const officeLocation = OfficeLocation.value.interpretedValue!
     const slotKey = 'OfficeLocation'
     const slot = CustomSlot[slotKey as keyof typeof CustomSlot]
     logger.debug(`Slot type detected`, { slotKey, slot })
+    if (Restaurants) {
+      const restaurant = Restaurants.value.interpretedValue!
+      await storeState({
+        sessionId,
+        slot: CustomSlot.Restaurants,
+        slotValue: { restaurant },
+        expireAt: Math.floor(Date.now() / 1000) + ONE_WEEK_IN_SECONDS,
+      })
+      return createCloseAction(sessionAttributes, intent, [
+        {
+          contentType: 'PlainText',
+          content: `You selected the restaurant: ${restaurant}. Enjoy your meal!`,
+        },
+      ])
+    }
+    const extractedRestaurant = extractRestaurantFromTranscript(inputTranscript)
+    if (extractedRestaurant) {
+      await storeState({
+        sessionId,
+        slot: CustomSlot.Restaurants,
+        slotValue: { restaurant: extractedRestaurant },
+        expireAt: Math.floor(Date.now() / 1000) + ONE_WEEK_IN_SECONDS,
+      })
+      return createCloseAction(sessionAttributes, intent, [
+        {
+          contentType: 'PlainText',
+          content: `You selected the restaurant: ${extractedRestaurant}. Enjoy your meal!`,
+        },
+      ])
+    }
     // Fetch the CuisineType from slots
-    const nextSlotValue = intent.slots?.CuisineType
-    if (nextSlotValue && isSlotValue(nextSlotValue)) {
-      const cuisineType = nextSlotValue.value.interpretedValue
-      if (!cuisineType) {
-        throw new Error('Cuisine type missing')
-      }
+    if (CuisineType) {
+      const cuisineType = CuisineType.value.interpretedValue!
       await storeState({
         sessionId,
         slot: CustomSlot.CuisineType,
         slotValue: { cuisineType },
+        expireAt: Math.floor(Date.now() / 1000) + ONE_WEEK_IN_SECONDS,
       })
-      return getLunchOptions(
-        sessionId,
-        slotKey,
-        nextSlotValue,
-        intent,
-        sessionAttributes,
-      )
+      const messages = await getLunchOptions(officeLocation, cuisineType)
+      const updatedIntent: LexV2Intent = {
+        ...intent,
+        state: 'InProgress',
+      }
+      return {
+        sessionState: {
+          intent: updatedIntent,
+          sessionAttributes: {
+            ...sessionAttributes,
+          },
+          dialogAction: {
+            type: 'ElicitSlot',
+            slotToElicit: CustomSlot.Restaurants,
+          },
+        },
+        messages,
+      }
     }
-    const officeSlotValue = intent.slots?.OfficeLocation
-    if (officeSlotValue) {
-      const officeLocation = OfficeLocation.value.interpretedValue
+    await storeState({
+      sessionId,
+      slot: CustomSlot.OfficeLocation,
+      slotValue: { officeLocation },
+      expireAt: Math.floor(Date.now() / 1000) + ONE_WEEK_IN_SECONDS,
+    })
 
-      if (!officeLocation) {
-        throw new Error('Office location missing')
-      }
-      await storeState({
-        sessionId,
-        slot: CustomSlot.OfficeLocation,
-        slotValue: { officeLocation },
-      })
+    // if office location was given and
+    // new state was stored we'll fetch possible cuisine types from dynamoDb
+    const supportedCuisineTypes =
+      await getCuisineTypesForOfficeLocation(officeLocation)
+    logger.debug('Found cuisineTypes', { supportedCuisineTypes })
 
-      // if office location was given and
-      // new state was stored we'll fetch possible cuisine types from dynamoDb
-      const supportedCuisineTypes =
-        await getCuisineTypesForOfficeLocation(officeLocation)
-      logger.debug('Found cuisineTypes', { supportedCuisineTypes })
-
-      const messages = createLexMessages(officeLocation, supportedCuisineTypes)
-      if (supportedCuisineTypes.length) {
-        return createElicitSlotAction(
-          'CuisineType',
-          sessionAttributes,
-          intent,
-          messages,
-        )
-      }
+    const messages = createCuisineTypeCards(
+      officeLocation,
+      supportedCuisineTypes,
+    )
+    if (supportedCuisineTypes.length) {
+      return createElicitSlotAction(
+        CustomSlot.CuisineType,
+        sessionAttributes,
+        intent,
+        messages,
+      )
     }
 
     return createCloseAction(sessionAttributes, intent, [])

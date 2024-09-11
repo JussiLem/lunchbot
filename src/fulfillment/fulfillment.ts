@@ -11,7 +11,7 @@ export const handler: LexV2Handler = async (event): Promise<LexV2Result> => {
   logger.debug('Received event', {
     event,
   })
-  const { sessionState, sessionId } = event
+  const { sessionState, sessionId, inputTranscript } = event
   const { sessionAttributes, intent } = sessionState
   const { name: intentName, slots } = intent
   logger.debug('Current intent and slots', {
@@ -44,9 +44,11 @@ export const handler: LexV2Handler = async (event): Promise<LexV2Result> => {
         ? slots.DietaryRestrictions
         : null,
       Budget: isSlotValue(slots.Budget) ? slots.Budget : null,
+      Restaurants: isSlotValue(slots.Restaurants) ? slots.Restaurants : null,
     }
     const result = await processSlots(
       sessionId,
+      inputTranscript,
       suggestLunchSlots,
       intent,
       sessionAttributes,

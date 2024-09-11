@@ -14,6 +14,7 @@ const intents: lex.CfnBot.IntentProperty[] = [
       { utterance: 'Give me lunch suggestions' },
       { utterance: 'Suggest a lunch option' },
       { utterance: "What's for lunch?" },
+      { utterance: 'Hungry' },
     ],
     initialResponseSetting: {
       nextStep: {
@@ -75,6 +76,25 @@ const intents: lex.CfnBot.IntentProperty[] = [
         },
       },
       {
+        slotTypeName: 'Restaurants',
+        name: 'Restaurants',
+        valueElicitationSetting: {
+          slotConstraint: 'Required',
+          promptSpecification: {
+            maxRetries: 2,
+            messageGroupsList: [
+              {
+                message: {
+                  plainTextMessage: {
+                    value: 'Pick the restaurant',
+                  },
+                },
+              },
+            ],
+          },
+        },
+      },
+      {
         slotTypeName: 'DietaryRestrictions',
         name: 'DietaryRestrictions',
         valueElicitationSetting: {
@@ -122,10 +142,14 @@ const intents: lex.CfnBot.IntentProperty[] = [
       },
       {
         priority: 3,
-        slotName: 'DietaryRestrictions',
+        slotName: 'Restaurants',
       },
       {
         priority: 4,
+        slotName: 'DietaryRestrictions',
+      },
+      {
+        priority: 5,
         slotName: 'Budget',
       },
     ],
@@ -158,6 +182,18 @@ export const botLocales: lex.CfnBot.BotLocaleProperty[] = [
         slotTypeValues: [
           { sampleValue: { value: 'Vegetarian' } },
           { sampleValue: { value: 'Vegan' } },
+        ],
+      },
+      {
+        name: 'Restaurants',
+        description: 'Possible lunch restaurants',
+        valueSelectionSetting: {
+          resolutionStrategy: 'ORIGINAL_VALUE',
+        },
+        slotTypeValues: [
+          { sampleValue: { value: 'Thai Restaurant' } },
+          { sampleValue: { value: 'Chinese Restaurant' } },
+          { sampleValue: { value: 'Buffet Restaurant' } },
         ],
       },
       {

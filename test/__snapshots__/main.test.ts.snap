@@ -149,6 +149,9 @@ exports[`Snapshot 1`] = `
                   {
                     "Utterance": "What's for lunch?",
                   },
+                  {
+                    "Utterance": "Hungry",
+                  },
                 ],
                 "SlotPriorities": [
                   {
@@ -161,10 +164,14 @@ exports[`Snapshot 1`] = `
                   },
                   {
                     "Priority": 3,
-                    "SlotName": "DietaryRestrictions",
+                    "SlotName": "Restaurants",
                   },
                   {
                     "Priority": 4,
+                    "SlotName": "DietaryRestrictions",
+                  },
+                  {
+                    "Priority": 5,
                     "SlotName": "Budget",
                   },
                 ],
@@ -210,6 +217,25 @@ exports[`Snapshot 1`] = `
                             "Message": {
                               "PlainTextMessage": {
                                 "Value": "What type of cuisine are you interested in?",
+                              },
+                            },
+                          },
+                        ],
+                      },
+                      "SlotConstraint": "Required",
+                    },
+                  },
+                  {
+                    "Name": "Restaurants",
+                    "SlotTypeName": "Restaurants",
+                    "ValueElicitationSetting": {
+                      "PromptSpecification": {
+                        "MaxRetries": 2,
+                        "MessageGroupsList": [
+                          {
+                            "Message": {
+                              "PlainTextMessage": {
+                                "Value": "Pick the restaurant",
                               },
                             },
                           },
@@ -293,6 +319,30 @@ exports[`Snapshot 1`] = `
                   {
                     "SampleValue": {
                       "Value": "Vegan",
+                    },
+                  },
+                ],
+                "ValueSelectionSetting": {
+                  "ResolutionStrategy": "ORIGINAL_VALUE",
+                },
+              },
+              {
+                "Description": "Possible lunch restaurants",
+                "Name": "Restaurants",
+                "SlotTypeValues": [
+                  {
+                    "SampleValue": {
+                      "Value": "Thai Restaurant",
+                    },
+                  },
+                  {
+                    "SampleValue": {
+                      "Value": "Chinese Restaurant",
+                    },
+                  },
+                  {
+                    "SampleValue": {
+                      "Value": "Buffet Restaurant",
                     },
                   },
                 ],
@@ -398,7 +448,124 @@ exports[`Snapshot 1`] = `
       },
       "Type": "AWS::Lex::BotVersion",
     },
-    "LunchStateTable49BC594E": {
+    "LunchCrawler8D863DE5": {
+      "Properties": {
+        "DatabaseName": "lunch",
+        "Role": {
+          "Fn::GetAtt": [
+            "LunchCrawlerRole881C0264",
+            "Arn",
+          ],
+        },
+        "Tags": {
+          "AppManagerCFNStackKey": "test",
+          "Environment": "dev",
+        },
+        "Targets": {
+          "DynamoDBTargets": [
+            {
+              "Path": {
+                "Ref": "LunchState9A59625F",
+              },
+            },
+          ],
+        },
+      },
+      "Type": "AWS::Glue::Crawler",
+    },
+    "LunchCrawlerRole881C0264": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "glue.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition",
+                },
+                ":iam::aws:policy/AWSGlueConsoleFullAccess",
+              ],
+            ],
+          },
+        ],
+        "Policies": [
+          {
+            "PolicyDocument": {
+              "Statement": [
+                {
+                  "Action": [
+                    "dynamodb:DescribeTable",
+                    "dynamodb:Scan",
+                  ],
+                  "Effect": "Allow",
+                  "Resource": {
+                    "Fn::GetAtt": [
+                      "LunchState9A59625F",
+                      "Arn",
+                    ],
+                  },
+                },
+              ],
+              "Version": "2012-10-17",
+            },
+            "PolicyName": "dynamoPolicy",
+          },
+          {
+            "PolicyDocument": {
+              "Statement": [
+                {
+                  "Action": "logs:*",
+                  "Effect": "Allow",
+                  "Resource": {
+                    "Fn::Join": [
+                      "",
+                      [
+                        "arn:aws:logs:",
+                        {
+                          "Ref": "AWS::Region",
+                        },
+                        ":",
+                        {
+                          "Ref": "AWS::AccountId",
+                        },
+                        ":log-group:/aws-glue/crawlers:log-stream:*",
+                      ],
+                    ],
+                  },
+                },
+              ],
+              "Version": "2012-10-17",
+            },
+            "PolicyName": "cloudwatch",
+          },
+        ],
+        "Tags": [
+          {
+            "Key": "AppManagerCFNStackKey",
+            "Value": "test",
+          },
+          {
+            "Key": "Environment",
+            "Value": "dev",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "LunchState9A59625F": {
       "DeletionPolicy": "Delete",
       "Properties": {
         "AttributeDefinitions": [
@@ -424,11 +591,16 @@ exports[`Snapshot 1`] = `
         ],
         "Replicas": [
           {
+            "DeletionProtectionEnabled": false,
             "Region": {
               "Ref": "AWS::Region",
             },
           },
         ],
+        "TimeToLiveSpecification": {
+          "AttributeName": "expireAt",
+          "Enabled": true,
+        },
       },
       "Type": "AWS::DynamoDB::GlobalTable",
       "UpdateReplacePolicy": "Delete",
@@ -511,7 +683,7 @@ exports[`Snapshot 1`] = `
             "POWERTOOLS_LOG_LEVEL": "DEBUG",
             "SERVICE_NAME": "lunchbot",
             "STATE_TABLE": {
-              "Ref": "LunchStateTable49BC594E",
+              "Ref": "LunchState9A59625F",
             },
           },
         },
@@ -635,7 +807,7 @@ exports[`Snapshot 1`] = `
               "Effect": "Allow",
               "Resource": {
                 "Fn::GetAtt": [
-                  "LunchStateTable49BC594E",
+                  "LunchState9A59625F",
                   "Arn",
                 ],
               },

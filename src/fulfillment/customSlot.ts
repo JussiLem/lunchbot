@@ -3,4 +3,5 @@ export enum CustomSlot {
   CuisineType = 'CuisineType',
   DietaryRestrictions = 'DietaryRestrictions',
   Budget = 'Budget',
+  Restaurants = 'Restaurants',
 }

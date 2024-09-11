@@ -10,6 +10,7 @@ interface LunchState {
   sessionId: string
   slot: CustomSlot
   slotValue: { [key: string]: string }
+  expireAt: number
 }
 
 /**
