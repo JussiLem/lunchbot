@@ -1,3 +1,16 @@
+# [1.5.0](https://github.com/JussiLem/lunchbot/compare/v1.4.3...v1.5.0) (2024-09-11)
+
+
+### Bug Fixes
+
+* **lunchbot:** simplified enums for now ([7e7d2e0](https://github.com/JussiLem/lunchbot/commit/7e7d2e0983a0749b4f1fd17c09e6d62d96844266))
+* **lunchbot:** use more meaningful key names for slotValue ([852c7c4](https://github.com/JussiLem/lunchbot/commit/852c7c4263b4f04664c338c0544566e58b735691))
+
+
+### Features
+
+* **lunchbot:** added restaurant option ([1c6a63d](https://github.com/JussiLem/lunchbot/commit/1c6a63da4fba28d11a9d03661ed9a5e3ddb2d7ba))
+
 ## [1.4.3](https://github.com/JussiLem/lunchbot/compare/v1.4.2...v1.4.3) (2024-09-06)
 
 
