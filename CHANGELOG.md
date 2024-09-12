@@ -1,3 +1,10 @@
+## [1.5.6](https://github.com/JussiLem/lunchbot/compare/v1.5.5...v1.5.6) (2024-09-12)
+
+
+### Bug Fixes
+
+* **lunchbot:** added restaurant table as glue target ([8030e23](https://github.com/JussiLem/lunchbot/commit/8030e23adbfebe93c46600f8be6d4679f3f82ade))
+
 ## [1.5.5](https://github.com/JussiLem/lunchbot/compare/v1.5.4...v1.5.5) (2024-09-12)
 
 
