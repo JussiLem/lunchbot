@@ -89,15 +89,7 @@ export class Lunch extends Construct {
     const targets: glue.CfnCrawler.TargetsProperty = {
       dynamoDbTargets,
     }
-    // const database: glue.CfnDatabase = new glue.CfnDatabase(this, 'Database', {
-    //   databaseInput: {
-    //     targetDatabase: {
-    //       region: Aws.REGION,
-    //     },
-    //   },
-    //   databaseName: 'lunch',
-    //   catalogId: Aws.ACCOUNT_ID,
-    // })
+
     new glue.CfnCrawler(this, 'Crawler', {
       role: crawlerRole.roleArn,
       targets,
@@ -108,6 +100,7 @@ export class Lunch extends Construct {
       'fulfillmentLambda',
       {
         runtime: lambda.Runtime.NODEJS_20_X,
+        logRetention: logs.RetentionDays.ONE_MONTH,
         environment: {
           SERVICE_NAME: 'lunchbot',
           POWERTOOLS_LOG_LEVEL: 'DEBUG',
