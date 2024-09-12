@@ -19,6 +19,7 @@ const updateVisitsToDynamoDb = async (lunches: Lunch[]): Promise<void> => {
 
     const restaurant = lunch.restaurant
     const officeLocation = lunch.officeLocation
+    const cuisineType = lunch.cuisineType
     if (!restaurant) {
       return Promise.reject(new Error('Restaurant not found'))
     }
@@ -29,12 +30,14 @@ const updateVisitsToDynamoDb = async (lunches: Lunch[]): Promise<void> => {
         restaurant,
         officeLocation,
       },
-      UpdateExpression: 'ADD #visits :inc',
+      UpdateExpression: 'SET #cuisineType = :cuisineType ADD #visits :inc',
       ExpressionAttributeNames: {
         '#visits': 'visits',
+        '#cuisineType': 'cuisineType',
       },
       ExpressionAttributeValues: {
         ':inc': 1,
+        ':cuisineType': cuisineType,
       },
     }
 

@@ -1,6 +1,7 @@
 import { QueryCommand, QueryCommandInput } from '@aws-sdk/lib-dynamodb'
 import { dbClient } from '../common/dbClient'
 import { ensureError } from '../ensureError'
+import { Restaurant } from './restaurant'
 
 const queryDynamoDb = async <T>(input: QueryCommandInput): Promise<T[]> => {
   try {
@@ -38,11 +39,6 @@ export const getCuisineTypesForOfficeLocation = async (
   }
 }
 
-export interface Restaurant {
-  readonly name: string
-  readonly rating: number
-  readonly visits: number
-}
 /**
  * Fetch all current lunch types for a given office location using GSI
  */

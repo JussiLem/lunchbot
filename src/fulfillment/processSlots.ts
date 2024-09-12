@@ -11,8 +11,8 @@ import { CustomSlot } from './customSlot'
 import {
   getCuisineTypesForOfficeLocation,
   getRestaurantsByCuisineType,
-  Restaurant,
 } from './getCuisineTypesForOfficeLocation'
+import { Restaurant } from './restaurant'
 import { storeState } from './storeState'
 import { logger } from '../common/powertools'
 
@@ -208,6 +208,7 @@ export const processSlots: NextSlotHandler = async (
   const { OfficeLocation, CuisineType, Restaurants } = slots
   if (OfficeLocation) {
     const officeLocation = OfficeLocation.value.interpretedValue!
+    const cuisineType = CuisineType?.value.interpretedValue!
     const slotKey = 'OfficeLocation'
     const slot = CustomSlot[slotKey as keyof typeof CustomSlot]
     logger.debug(`Slot type detected`, { slotKey, slot })
@@ -234,6 +235,7 @@ export const processSlots: NextSlotHandler = async (
         slotValue: {
           restaurant: extractedRestaurant,
           officeLocation: officeLocation,
+          cuisineType: cuisineType,
         },
         expireAt: Math.floor(Date.now() / 1000) + ONE_WEEK_IN_SECONDS,
       })
@@ -246,7 +248,6 @@ export const processSlots: NextSlotHandler = async (
     }
     // Fetch the CuisineType from slots
     if (CuisineType) {
-      const cuisineType = CuisineType.value.interpretedValue!
       await storeState({
         sessionId,
         slot: CustomSlot.CuisineType,

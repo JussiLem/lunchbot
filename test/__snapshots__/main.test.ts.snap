@@ -827,6 +827,9 @@ exports[`Snapshot 1`] = `
             },
           },
         ],
+        "StreamSpecification": {
+          "StreamViewType": "NEW_IMAGE",
+        },
       },
       "Type": "AWS::DynamoDB::GlobalTable",
       "UpdateReplacePolicy": "Delete",
@@ -1308,6 +1311,207 @@ exports[`Snapshot 1`] = `
         "Roles": [
           {
             "Ref": "LunchstreamLambdaServiceRole27F58536",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
+    },
+    "LunchstreamRestaurantLambdaD5168A64": {
+      "DependsOn": [
+        "LunchstreamRestaurantLambdaServiceRoleDefaultPolicyB3CB6C15",
+        "LunchstreamRestaurantLambdaServiceRoleC3A31AE8",
+      ],
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Fn::Sub": "[ASSET BUCKET]-\${AWS::AccountId}-\${AWS::Region}",
+          },
+          "S3Key": "[ASSET ZIP]",
+        },
+        "Environment": {
+          "Variables": {
+            "LUNCH_TABLE": {
+              "Ref": "LunchTableFC372FD3",
+            },
+            "POWERTOOLS_LOG_LEVEL": "ERROR",
+            "SERVICE_NAME": "lunchbot",
+          },
+        },
+        "Handler": "index.handler",
+        "Role": {
+          "Fn::GetAtt": [
+            "LunchstreamRestaurantLambdaServiceRoleC3A31AE8",
+            "Arn",
+          ],
+        },
+        "Runtime": "nodejs20.x",
+        "Tags": [
+          {
+            "Key": "AppManagerCFNStackKey",
+            "Value": "test",
+          },
+          {
+            "Key": "Environment",
+            "Value": "dev",
+          },
+        ],
+      },
+      "Type": "AWS::Lambda::Function",
+    },
+    "LunchstreamRestaurantLambdaDynamoDBEventSourcetestLunchRestaurantCA1ECBAD26850067": {
+      "Properties": {
+        "BatchSize": 100,
+        "EventSourceArn": {
+          "Fn::GetAtt": [
+            "LunchRestaurant064C618A",
+            "StreamArn",
+          ],
+        },
+        "FunctionName": {
+          "Ref": "LunchstreamRestaurantLambdaD5168A64",
+        },
+        "StartingPosition": "TRIM_HORIZON",
+      },
+      "Type": "AWS::Lambda::EventSourceMapping",
+    },
+    "LunchstreamRestaurantLambdaLogRetention25B5A5F6": {
+      "Properties": {
+        "LogGroupName": {
+          "Fn::Join": [
+            "",
+            [
+              "/aws/lambda/",
+              {
+                "Ref": "LunchstreamRestaurantLambdaD5168A64",
+              },
+            ],
+          ],
+        },
+        "RetentionInDays": 30,
+        "ServiceToken": {
+          "Fn::GetAtt": [
+            "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A",
+            "Arn",
+          ],
+        },
+      },
+      "Type": "Custom::LogRetention",
+    },
+    "LunchstreamRestaurantLambdaServiceRoleC3A31AE8": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition",
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+              ],
+            ],
+          },
+        ],
+        "Tags": [
+          {
+            "Key": "AppManagerCFNStackKey",
+            "Value": "test",
+          },
+          {
+            "Key": "Environment",
+            "Value": "dev",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "LunchstreamRestaurantLambdaServiceRoleDefaultPolicyB3CB6C15": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "dynamodb:ListStreams",
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "LunchRestaurant064C618A",
+                  "StreamArn",
+                ],
+              },
+            },
+            {
+              "Action": [
+                "dynamodb:DescribeStream",
+                "dynamodb:GetRecords",
+                "dynamodb:GetShardIterator",
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "LunchRestaurant064C618A",
+                  "StreamArn",
+                ],
+              },
+            },
+            {
+              "Action": [
+                "dynamodb:BatchGetItem",
+                "dynamodb:GetRecords",
+                "dynamodb:GetShardIterator",
+                "dynamodb:Query",
+                "dynamodb:GetItem",
+                "dynamodb:Scan",
+                "dynamodb:ConditionCheckItem",
+                "dynamodb:BatchWriteItem",
+                "dynamodb:PutItem",
+                "dynamodb:UpdateItem",
+                "dynamodb:DeleteItem",
+                "dynamodb:DescribeTable",
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "LunchTableFC372FD3",
+                    "Arn",
+                  ],
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "LunchTableFC372FD3",
+                          "Arn",
+                        ],
+                      },
+                      "/index/*",
+                    ],
+                  ],
+                },
+              ],
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "LunchstreamRestaurantLambdaServiceRoleDefaultPolicyB3CB6C15",
+        "Roles": [
+          {
+            "Ref": "LunchstreamRestaurantLambdaServiceRoleC3A31AE8",
           },
         ],
       },

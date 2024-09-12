@@ -12,5 +12,6 @@ export interface Lunch {
   slot: CustomSlot
   restaurant?: string
   officeLocation?: string
+  cuisineType?: string
   expireAt: number
 }

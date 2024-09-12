@@ -127,6 +127,7 @@ export class Lunch extends Construct {
         name: 'officeLocation',
       },
       removalPolicy: RemovalPolicy.DESTROY,
+      dynamoStream: dynamodb.StreamViewType.NEW_IMAGE,
     })
     const streamLambda = new nodejs.NodejsFunction(this, 'streamLambda', {
       runtime: lambda.Runtime.NODEJS_20_X,
@@ -138,6 +139,28 @@ export class Lunch extends Construct {
       },
       entry: 'src/fulfillment/lunch-stream.ts',
     })
+    const streamRestaurantLambda = new nodejs.NodejsFunction(
+      this,
+      'streamRestaurantLambda',
+      {
+        runtime: lambda.Runtime.NODEJS_20_X,
+        logRetention: logs.RetentionDays.ONE_MONTH,
+        environment: {
+          SERVICE_NAME: 'lunchbot',
+          POWERTOOLS_LOG_LEVEL: 'ERROR',
+          LUNCH_TABLE: lunchTable.tableName,
+        },
+        entry: 'src/fulfillment/restaurant-stream.ts',
+      },
+    )
+    streamRestaurantLambda.addEventSource(
+      new event_sources.DynamoEventSource(restaurantTable, {
+        startingPosition: lambda.StartingPosition.TRIM_HORIZON,
+      }),
+    )
+    lunchTable.grantReadWriteData(streamRestaurantLambda)
+    restaurantTable.grantStreamRead(streamRestaurantLambda)
+
     streamLambda.addEventSource(
       new event_sources.DynamoEventSource(stateTable, {
         startingPosition: lambda.StartingPosition.TRIM_HORIZON,
