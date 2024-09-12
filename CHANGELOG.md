@@ -1,3 +1,11 @@
+## [1.5.5](https://github.com/JussiLem/lunchbot/compare/v1.5.4...v1.5.5) (2024-09-12)
+
+
+### Bug Fixes
+
+* **lunchbot:** added retention period for lambda function ([710934c](https://github.com/JussiLem/lunchbot/commit/710934ced5aaebac5c639417daa527afa8507dfa))
+* **lunchbot:** adjusting the restaurant visit calculator ([812668b](https://github.com/JussiLem/lunchbot/commit/812668be6af97661eecdd4759068cf3bf7b3929a))
+
 ## [1.5.4](https://github.com/JussiLem/lunchbot/compare/v1.5.3...v1.5.4) (2024-09-12)
 
 
