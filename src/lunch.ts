@@ -8,6 +8,7 @@ import {
   aws_lambda_nodejs as nodejs,
   aws_logs as logs,
   RemovalPolicy,
+  Stack,
 } from 'aws-cdk-lib'
 import { Construct } from 'constructs'
 
@@ -16,6 +17,7 @@ export class Lunch extends Construct {
 
   constructor(scope: Readonly<Construct>, id: string) {
     super(scope, id)
+    const stack = Stack.of(this)
 
     const lunchTable = new dynamodb.TableV2(this, 'Table', {
       partitionKey: {
@@ -52,49 +54,7 @@ export class Lunch extends Construct {
       removalPolicy: RemovalPolicy.DESTROY,
       dynamoStream: dynamodb.StreamViewType.NEW_IMAGE,
     })
-    const crawlerRole = new iam.Role(this, 'CrawlerRole', {
-      assumedBy: new iam.ServicePrincipal('glue.amazonaws.com'),
-      inlinePolicies: {
-        dynamoPolicy: new iam.PolicyDocument({
-          statements: [
-            new iam.PolicyStatement({
-              effect: iam.Effect.ALLOW,
-              actions: ['dynamodb:DescribeTable', 'dynamodb:Scan'],
-              resources: [stateTable.tableArn],
-            }),
-          ],
-        }),
-        cloudwatch: new iam.PolicyDocument({
-          statements: [
-            new iam.PolicyStatement({
-              effect: iam.Effect.ALLOW,
-              actions: ['logs:*'],
-              resources: [
-                `arn:aws:logs:${Aws.REGION}:${Aws.ACCOUNT_ID}:log-group:/aws-glue/crawlers:log-stream:*`,
-              ],
-            }),
-          ],
-        }),
-      },
-    })
-    crawlerRole.addManagedPolicy(
-      iam.ManagedPolicy.fromAwsManagedPolicyName('AWSGlueConsoleFullAccess'),
-    )
 
-    const dynamoDbTargets: glue.CfnCrawler.DynamoDBTargetProperty[] = [
-      {
-        path: stateTable.tableName,
-      },
-    ]
-    const targets: glue.CfnCrawler.TargetsProperty = {
-      dynamoDbTargets,
-    }
-
-    new glue.CfnCrawler(this, 'Crawler', {
-      role: crawlerRole.roleArn,
-      targets,
-      databaseName: 'lunch',
-    })
     this.fulfillmentLambda = new nodejs.NodejsFunction(
       this,
       'fulfillmentLambda',
@@ -122,6 +82,57 @@ export class Lunch extends Construct {
       removalPolicy: RemovalPolicy.DESTROY,
       dynamoStream: dynamodb.StreamViewType.NEW_IMAGE,
     })
+    const crawlerRole = new iam.Role(this, 'CrawlerRole', {
+      assumedBy: new iam.ServicePrincipal('glue.amazonaws.com'),
+      inlinePolicies: {
+        dynamoPolicy: new iam.PolicyDocument({
+          statements: [
+            new iam.PolicyStatement({
+              effect: iam.Effect.ALLOW,
+              actions: ['dynamodb:DescribeTable', 'dynamodb:Scan'],
+              resources: [stateTable.tableArn, restaurantTable.tableArn],
+            }),
+          ],
+        }),
+        cloudwatch: new iam.PolicyDocument({
+          statements: [
+            new iam.PolicyStatement({
+              effect: iam.Effect.ALLOW,
+              actions: ['logs:*'],
+              resources: [
+                `arn:aws:logs:${Aws.REGION}:${Aws.ACCOUNT_ID}:log-group:/aws-glue/crawlers:log-stream:*`,
+              ],
+            }),
+          ],
+        }),
+      },
+    })
+    crawlerRole.addManagedPolicy(
+      iam.ManagedPolicy.fromAwsManagedPolicyName('AWSGlueConsoleFullAccess'),
+    )
+
+    const dynamoDbTargets: glue.CfnCrawler.DynamoDBTargetProperty[] = [
+      {
+        path: stateTable.tableName,
+      },
+      {
+        path: restaurantTable.tableName,
+      },
+    ]
+    const targets: glue.CfnCrawler.TargetsProperty = {
+      dynamoDbTargets,
+    }
+
+    new glue.CfnCrawler(this, 'Crawler', {
+      role: crawlerRole.roleArn,
+      targets,
+      tags: {
+        AppManagerCFNStackKey: stack.stackName,
+        Environment: 'dev',
+      },
+      databaseName: 'lunch',
+    })
+
     const streamLambda = new nodejs.NodejsFunction(this, 'streamLambda', {
       runtime: lambda.Runtime.NODEJS_20_X,
       logRetention: logs.RetentionDays.ONE_MONTH,

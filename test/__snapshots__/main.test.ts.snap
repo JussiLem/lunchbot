@@ -699,6 +699,11 @@ exports[`Snapshot 1`] = `
                 "Ref": "LunchState9A59625F",
               },
             },
+            {
+              "Path": {
+                "Ref": "LunchRestaurant064C618A",
+              },
+            },
           ],
         },
       },
@@ -742,12 +747,20 @@ exports[`Snapshot 1`] = `
                     "dynamodb:Scan",
                   ],
                   "Effect": "Allow",
-                  "Resource": {
-                    "Fn::GetAtt": [
-                      "LunchState9A59625F",
-                      "Arn",
-                    ],
-                  },
+                  "Resource": [
+                    {
+                      "Fn::GetAtt": [
+                        "LunchState9A59625F",
+                        "Arn",
+                      ],
+                    },
+                    {
+                      "Fn::GetAtt": [
+                        "LunchRestaurant064C618A",
+                        "Arn",
+                      ],
+                    },
+                  ],
                 },
               ],
               "Version": "2012-10-17",
