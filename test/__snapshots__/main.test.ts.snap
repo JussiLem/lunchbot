@@ -696,12 +696,17 @@ exports[`Snapshot 1`] = `
           "DynamoDBTargets": [
             {
               "Path": {
+                "Ref": "LunchRestaurant064C618A",
+              },
+            },
+            {
+              "Path": {
                 "Ref": "LunchState9A59625F",
               },
             },
             {
               "Path": {
-                "Ref": "LunchRestaurant064C618A",
+                "Ref": "LunchTableFC372FD3",
               },
             },
           ],
@@ -757,6 +762,12 @@ exports[`Snapshot 1`] = `
                     {
                       "Fn::GetAtt": [
                         "LunchRestaurant064C618A",
+                        "Arn",
+                      ],
+                    },
+                    {
+                      "Fn::GetAtt": [
+                        "LunchTableFC372FD3",
                         "Arn",
                       ],
                     },

@@ -90,7 +90,11 @@ export class Lunch extends Construct {
             new iam.PolicyStatement({
               effect: iam.Effect.ALLOW,
               actions: ['dynamodb:DescribeTable', 'dynamodb:Scan'],
-              resources: [stateTable.tableArn, restaurantTable.tableArn],
+              resources: [
+                stateTable.tableArn,
+                restaurantTable.tableArn,
+                lunchTable.tableArn,
+              ],
             }),
           ],
         }),
@@ -113,10 +117,13 @@ export class Lunch extends Construct {
 
     const dynamoDbTargets: glue.CfnCrawler.DynamoDBTargetProperty[] = [
       {
+        path: restaurantTable.tableName,
+      },
+      {
         path: stateTable.tableName,
       },
       {
-        path: restaurantTable.tableName,
+        path: lunchTable.tableName,
       },
     ]
     const targets: glue.CfnCrawler.TargetsProperty = {
