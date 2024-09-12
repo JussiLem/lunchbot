@@ -1,3 +1,10 @@
+## [1.5.7](https://github.com/JussiLem/lunchbot/compare/v1.5.6...v1.5.7) (2024-09-12)
+
+
+### Bug Fixes
+
+* **lunchbot:** added restaurant table to glue crawler ([46a39ea](https://github.com/JussiLem/lunchbot/commit/46a39ea8684f706f5d890efb6d6dc032fa1ad5c4))
+
 ## [1.5.6](https://github.com/JussiLem/lunchbot/compare/v1.5.5...v1.5.6) (2024-09-12)
 
 
