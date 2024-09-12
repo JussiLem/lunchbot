@@ -7,7 +7,8 @@
   "root": true,
   "plugins": [
     "@typescript-eslint",
-    "import"
+    "import",
+    "unicorn"
   ],
   "parser": "@typescript-eslint/parser",
   "parserOptions": {
@@ -134,7 +135,18 @@
       {
         "enforcement": "ReadonlyDeep"
       }
-    ]
+    ],
+    "unicorn/better-regex": "error",
+    "unicorn/consistent-empty-array-spread": "error",
+    "unicorn/catch-error-name": "error",
+    "unicorn/error-message": "error",
+    "unicorn/no-lonely-if": "error",
+    "unicorn/no-negation-in-equality-check": "error",
+    "unicorn/no-unnecessary-await": "error",
+    "unicorn/no-useless-undefined": "error",
+    "unicorn/prefer-array-flat-map": "error",
+    "unicorn/prefer-json-parse-buffer": "error",
+    "unicorn/prefer-object-from-entries": "error"
   },
   "overrides": [
     {

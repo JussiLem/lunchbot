@@ -13,6 +13,59 @@ import { ensureError } from '../ensureError'
 import { Restaurant } from './restaurant'
 import { RestaurantDto } from './restaurant-dto'
 
+interface UpdateParams {
+  UpdateExpression: string
+  ExpressionAttributeNames: { [key: string]: string }
+  ExpressionAttributeValues: { [key: string]: any }
+}
+
+const createUpdateParams = (restaurant: RestaurantDto): UpdateParams => {
+  const { restaurant: name, visits, rating } = restaurant
+
+  const newRestaurant = {
+    name,
+    ...(visits !== undefined && { visits }),
+    ...(rating !== undefined && { rating }),
+  }
+
+  const baseExpressionAttributeValues = {
+    ':restaurants': [newRestaurant], // Ensure this is an array
+    ':emptyList': [],
+    ...(rating !== undefined && {
+      ':rating': rating,
+      ':visitIncrement': visits ?? 1, // Increment by visits or default to 1 if undefined
+      ':zero': 0,
+    }),
+  }
+
+  const baseExpressionAttributeNames = {
+    '#restaurants': 'restaurants',
+    ...(rating !== undefined && {
+      '#totalVisits': 'totalVisits',
+      '#totalRating': 'totalRating',
+      '#averageRating': 'averageRating',
+    }),
+  }
+
+  const updateExpressions = [
+    'SET #restaurants = list_append(if_not_exists(#restaurants, :emptyList), :restaurants)',
+    ...(rating !== undefined
+      ? [
+          'ADD #totalVisits :visitIncrement',
+          'SET #totalRating = if_not_exists(#totalRating, :zero) + :rating, #averageRating = #totalRating / #totalVisits',
+        ]
+      : []),
+  ]
+
+  const UpdateExpression = updateExpressions.join(', ')
+
+  return {
+    UpdateExpression,
+    ExpressionAttributeNames: baseExpressionAttributeNames,
+    ExpressionAttributeValues: baseExpressionAttributeValues,
+  }
+}
+
 /**
  * Increase visit by one for given restaurant
  * @param restaurants
@@ -20,31 +73,29 @@ import { RestaurantDto } from './restaurant-dto'
 const updateModifiedRestaurantsToOffices = async (
   restaurants: RestaurantDto[],
 ): Promise<void> => {
-  // Map each lunch for a promise that updates the visits count
   const updatePromises = restaurants.map((restaurant) => {
     logger.debug('Restaurant state', { restaurant })
 
-    const officeLocation = restaurant.officeLocation
-    const cuisineType = restaurant.cuisineType
-    if (!restaurant || !officeLocation || !cuisineType) {
+    const { officeLocation, cuisineType, restaurant: name } = restaurant
+    if (!officeLocation || !cuisineType || !name) {
       return Promise.reject(new Error('Missing needed parameters'))
     }
 
+    const {
+      UpdateExpression,
+      ExpressionAttributeNames,
+      ExpressionAttributeValues,
+    } = createUpdateParams(restaurant)
+
     const input: UpdateCommandInput = {
-      TableName: process.env.RESTAURANT_TABLE!,
+      TableName: process.env.LUNCH_TABLE!,
       Key: {
         officeLocation,
         cuisineType,
       },
-      UpdateExpression: 'SET #restaurants :restaurants',
-      ExpressionAttributeNames: {
-        '#restaurants': 'restaurants',
-      },
-      ExpressionAttributeValues: {
-        ':restaurants': {
-          visits: restaurant.visits,
-        },
-      },
+      UpdateExpression,
+      ExpressionAttributeNames,
+      ExpressionAttributeValues,
     }
 
     logger.debug('Updating state', { input })
@@ -53,17 +104,25 @@ const updateModifiedRestaurantsToOffices = async (
 
   try {
     await Promise.all(updatePromises)
-  } catch (e) {
-    const error = ensureError(e)
+  } catch (error_) {
+    const error = ensureError(error_)
     logger.error('Error updating visits to DynamoDB:', error)
+    throw error
   }
 }
 
 /**
- * Add new restaurants to existing office and cuisineType.
- * @throws error Doesn't create a new one if given Key is missing,
- * but throws an error.
- * @param restaurants
+ * Add new restaurants to existing office locations and cuisine types. Optionally,
+ * if a rating is provided, update the average rating for the cuisine type and office location.
+ *
+ * This function:
+ * - Adds new restaurants to the specified office and cuisine type.
+ * - Updates the total number of visits and ratings, and recalculates the average rating when a rating is provided.
+ * - Ensures immutability by avoiding mutation of existing objects and using a functional composition approach.
+ *
+ * @throws {Error} If a required parameter (officeLocation, cuisineType, or name) is missing.
+ * @param {RestaurantDto[]} restaurants - An array of restaurant data transfer objects.
+ * @returns {Promise<void>} - A promise that resolves when all updates are completed.
  */
 const addNewRestaurantsToOffices = async (
   restaurants: RestaurantDto[],
@@ -71,38 +130,26 @@ const addNewRestaurantsToOffices = async (
   const updatePromises = restaurants.map((restaurant) => {
     logger.debug('Restaurant state', { restaurant })
 
-    const {
-      officeLocation,
-      cuisineType,
-      restaurant: name,
-      rating,
-      visits,
-    } = restaurant
-    if (!restaurant || !officeLocation || !cuisineType || !name) {
+    const { officeLocation, cuisineType, restaurant: name } = restaurant
+    if (!officeLocation || !cuisineType || !name) {
       return Promise.reject(new Error('Missing needed parameters'))
     }
 
+    const {
+      UpdateExpression,
+      ExpressionAttributeNames,
+      ExpressionAttributeValues,
+    } = createUpdateParams(restaurant)
+
     const input: UpdateCommandInput = {
-      TableName: process.env.RESTAURANT_TABLE!,
+      TableName: process.env.LUNCH_TABLE!,
       Key: {
         officeLocation,
         cuisineType,
       },
-      UpdateExpression:
-        'SET #restaurants = list_append(if_not_exists(#restaurants, :emptyList), :restaurants)',
-      ExpressionAttributeNames: {
-        '#restaurants': 'restaurants',
-      },
-      ExpressionAttributeValues: {
-        ':restaurants': [
-          {
-            name,
-            rating,
-            visits,
-          },
-        ],
-        ':emptyList': [],
-      },
+      UpdateExpression,
+      ExpressionAttributeNames,
+      ExpressionAttributeValues,
     }
 
     logger.debug('Updating state', { input })
@@ -111,8 +158,8 @@ const addNewRestaurantsToOffices = async (
 
   try {
     await Promise.all(updatePromises)
-  } catch (e) {
-    const error = ensureError(e)
+  } catch (error_) {
+    const error = ensureError(error_)
     logger.error('Error updating visits to DynamoDB:', error)
     throw error
   }
@@ -136,7 +183,7 @@ const removeRestaurantsFromOffices = async (
     }
 
     const getInput: GetCommandInput = {
-      TableName: process.env.RESTAURANT_TABLE!,
+      TableName: process.env.LUNCH_TABLE!,
       Key: {
         officeLocation,
         cuisineType,
@@ -155,7 +202,7 @@ const removeRestaurantsFromOffices = async (
     )
 
     const updateInput: UpdateCommandInput = {
-      TableName: process.env.RESTAURANT_TABLE!,
+      TableName: process.env.LUNCH_TABLE!,
       Key: {
         officeLocation,
         cuisineType,
@@ -175,8 +222,8 @@ const removeRestaurantsFromOffices = async (
 
   try {
     await Promise.all(updatePromises)
-  } catch (e) {
-    const error = ensureError(e)
+  } catch (error_) {
+    const error = ensureError(error_)
     logger.error('Error updating visits to DynamoDB:', error)
     throw error
   }
@@ -196,8 +243,7 @@ export const handler: DynamoDBStreamHandler = async (event) => {
       typeof r.restaurant === 'string' &&
       typeof r.officeLocation === 'string' &&
       typeof r.cuisineType === 'string' &&
-      (r.visits === undefined || typeof r.visits === 'number') &&
-      (r.rating === undefined || typeof r.rating === 'number')
+      (r.visits === undefined || typeof r.visits === 'number')
     )
   }
 

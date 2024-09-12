@@ -31,6 +31,7 @@ const project = new awscdk.AwsCdkTypeScriptApp({
   ],
   devDeps: [
     'eslint-plugin-functional@6.6.3',
+    'eslint-plugin-unicorn',
     'commitizen',
     'cz-conventional-changelog',
     'semantic-release',
@@ -75,9 +76,10 @@ project.tasks.addTask('commit', {
   exec: 'npx git-cz',
 })
 
-project?.eslint?.addExtends('plugin:functional/recommended')
+project.eslint?.addPlugins('unicorn')
+project.eslint?.addExtends('plugin:functional/recommended')
 
-project?.eslint?.addRules({
+project.eslint?.addRules({
   'functional/no-expression-statements': 'off',
   'functional/no-return-void': 'off',
   'functional/no-classes': 'off',
@@ -87,6 +89,17 @@ project?.eslint?.addRules({
       enforcement: 'ReadonlyDeep',
     },
   ],
+  'unicorn/better-regex': 'error',
+  'unicorn/consistent-empty-array-spread': 'error',
+  'unicorn/catch-error-name': 'error',
+  'unicorn/error-message': 'error',
+  'unicorn/no-lonely-if': 'error',
+  'unicorn/no-negation-in-equality-check': 'error',
+  'unicorn/no-unnecessary-await': 'error',
+  'unicorn/no-useless-undefined': 'error',
+  'unicorn/prefer-array-flat-map': 'error',
+  'unicorn/prefer-json-parse-buffer': 'error',
+  'unicorn/prefer-object-from-entries': 'error',
 })
 
 const workflow = project.github?.addWorkflow('release')

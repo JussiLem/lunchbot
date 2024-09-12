@@ -48,8 +48,8 @@ const updateVisitsToDynamoDb = async (lunches: Lunch[]): Promise<void> => {
   try {
     // Wait for all update operations to complete
     await Promise.all(updatePromises)
-  } catch (e) {
-    const error = ensureError(e)
+  } catch (error_) {
+    const error = ensureError(error_)
     // Handle errors here, potentially logging them or taking other actions
     logger.error('Error updating visits to DynamoDB:', error)
   }

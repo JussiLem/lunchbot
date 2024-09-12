@@ -54,8 +54,8 @@ export const handler: LexV2Handler = async (event): Promise<LexV2Result> => {
       sessionAttributes,
     )
     return result
-  } catch (e) {
-    const error = ensureError(e)
+  } catch (error_) {
+    const error = ensureError(error_)
     logger.error('Error processing slot', { error })
     return delegate(
       sessionAttributes,

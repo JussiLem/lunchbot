@@ -149,6 +149,14 @@ const getPreviousRestaurants = async (
   return getRestaurantsByCuisineType(officeLocation, lunchType)
 }
 
+const createSubtitle = (restaurant: Restaurant) => {
+  if (!restaurant.visits) {
+    return 'No visits yet. Are you willing to try out?'
+  } else if (!restaurant.rating) {
+    return `Visits: ${restaurant.visits}`
+  }
+  return `Rating: ${restaurant.rating}/5 | Visits: ${restaurant.visits}`
+}
 const createRestaurantCards = (
   officeLocation: string,
   restaurants: Restaurant[],
@@ -161,14 +169,13 @@ const createRestaurantCards = (
       } as LexV2ContentMessage,
     ]
   }
-
   return restaurants.map(
     (restaurant) =>
       ({
         contentType: 'ImageResponseCard',
         imageResponseCard: {
           title: restaurant.name,
-          subtitle: `Rating: ${restaurant.rating}/5 | Visits: ${restaurant.visits}`,
+          subtitle: createSubtitle(restaurant),
           buttons: [
             {
               text: 'Select this restaurant',
@@ -195,7 +202,7 @@ const ONE_WEEK_IN_SECONDS = 7 * 24 * 60 * 60 // 7 days in seconds
 
 const extractRestaurantFromTranscript = (transcript: string): string | null => {
   // Implement logic to extract restaurant, e.g. regex match or pattern processing
-  const match = /([A-Za-z\s]+) was chosen/.exec(transcript)
+  const match = /([\sA-Za-z]+) was chosen/.exec(transcript)
   return match ? match[1] : null
 }
 export const processSlots: NextSlotHandler = async (

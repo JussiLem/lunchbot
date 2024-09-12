@@ -3,7 +3,7 @@ import { Template } from 'aws-cdk-lib/assertions'
 import { LunchBotStack } from '../src/main'
 
 // Expected patterns
-const assetMatch = /[0-9a-f]{64}\.zip/
+const assetMatch = /[\da-f]{64}\.zip/
 const bucketMatch = new RegExp(`cdk-[0-9a-z]{9}-assets`)
 
 expect.addSnapshotSerializer({

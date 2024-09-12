@@ -63,8 +63,8 @@ const forwardToLex = async (
     logger.debug('Result to Lex:', {
       result,
     })
-  } catch (e) {
-    const error = ensureError(e)
+  } catch (error_) {
+    const error = ensureError(error_)
     logger.error('Error forwarding to Lex:', error)
     throw error
   }
@@ -100,8 +100,8 @@ const handleRecord = async (
     })
     await processMessage(record.body)
     return null // No failure
-  } catch (e) {
-    const error = ensureError(e)
+  } catch (error_) {
+    const error = ensureError(error_)
     logger.error(`Error processing message ID`, {
       error,
       messageId: record.messageId,
