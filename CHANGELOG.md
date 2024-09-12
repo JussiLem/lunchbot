@@ -1,3 +1,10 @@
+## [1.5.4](https://github.com/JussiLem/lunchbot/compare/v1.5.3...v1.5.4) (2024-09-12)
+
+
+### Bug Fixes
+
+* **lunchbot:** delete, add or update restaurant visits in the lunch table ([53744fc](https://github.com/JussiLem/lunchbot/commit/53744fc0de045c45b86d5ad6f84cc048ab08063b))
+
 ## [1.5.3](https://github.com/JussiLem/lunchbot/compare/v1.5.2...v1.5.3) (2024-09-11)
 
 
