@@ -1233,6 +1233,16 @@ exports[`Snapshot 1`] = `
           "Ref": "LunchstreamLambda77382ABA",
         },
         "StartingPosition": "TRIM_HORIZON",
+        "Tags": [
+          {
+            "Key": "AppManagerCFNStackKey",
+            "Value": "test",
+          },
+          {
+            "Key": "Environment",
+            "Value": "dev",
+          },
+        ],
       },
       "Type": "AWS::Lambda::EventSourceMapping",
     },
@@ -1418,6 +1428,16 @@ exports[`Snapshot 1`] = `
           "Ref": "LunchstreamRestaurantLambdaD5168A64",
         },
         "StartingPosition": "TRIM_HORIZON",
+        "Tags": [
+          {
+            "Key": "AppManagerCFNStackKey",
+            "Value": "test",
+          },
+          {
+            "Key": "Environment",
+            "Value": "dev",
+          },
+        ],
       },
       "Type": "AWS::Lambda::EventSourceMapping",
     },
